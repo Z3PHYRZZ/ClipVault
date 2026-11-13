@@ -90,12 +90,23 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 - Releases: **v0.1.0** (first), **v0.1.1** (5-color coolors), **v0.1.2**
   (pink/mauve), **v0.1.3** (cream/ink) — all live with installer + portable exe.
 - **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3
-  assets `ClipVault-0.1.3-Setup.exe` (6,389,550 B) + `clipvault.exe` (14,024,192 B).
+  (same tag, re-uploaded 2026-11-13 with the features below)
+  assets `ClipVault-0.1.3-Setup.exe` (6,391,753 B) + `clipvault.exe` (14,039,040 B).
 - Docs: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`, `docs/INSTALL.md`,
   `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README badges + docs links.
   `.gitignore` excludes `target/` and `installer/Output/`.
-- All gates re-verified: check 0/0, fmt OK, clippy -D warnings 0, 35 tests pass,
-  release exe `0.1.3.0` (PE subsystem 2), install/run/uninstall 0/124/0.
+- All gates re-verified: check 0/0, fmt OK, clippy -D warnings 0, **40 tests**
+  (29 unit + 10 db + 1 v3->v4 migration), release exe `0.1.3.0`
+  (PE subsystem 2), install/run/uninstall 0/124/0.
+
+**v0.1.3 feature additions (same tag, no version bump):** Photo preview —
+lazy 52x42 thumbnails in the history list (`image::Handle::from_path`, no GUI
+thread reads) + 300px `Contain` preview with dimensions. Copy provenance —
+`source_app` (clipboard owner process basename) and `source_url` (browser
+`CF_HTML` `SourceURL:` / bare link), captured while clipboard is open, stored in
+SQLite schema **v4** (`source_url` column + partial index), shown in history
+subtitle + preview SOURCE section. New `src/platform/source.rs`,
+`workers::ClipCapture`, boxed worker messages, `tests/migration_tests.rs`.
 
 **v0.1.3 palette (2026-11-13):** Two colors only — Cream `#F2E9E4` and
 Ink `#22223B`. `contracts.rs` exports `CREAM`/`INK` (+ RGB tuples,
