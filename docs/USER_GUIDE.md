@@ -37,7 +37,7 @@ with one keystroke. Nothing leaves your machine.
 | Button | What it does |
 |---|---|
 | **Pin / Unpin** | Keeps the entry at the top and exempts it from retention pruning. |
-| **Fav / Unfav** | Marks a favorite (also exempt from pruning). Active state is shown by a Dusty Rose fill and a thicker border. |
+| **Fav / Unfav** | Marks a favorite (also exempt from pruning). Active state is shown by a ROSE fill and a thicker border. |
 | **Copy** | Restores that entry to the Windows clipboard so you can paste it anywhere. |
 | **Delete** | Removes just that entry. |
 | **Clear all** | Removes all history except pinned and favorite entries. Asks for confirmation. |
@@ -58,7 +58,7 @@ a hint in the status bar asking you to rebind.
 
 ## System tray
 
-The pastel-rose tray icon keeps ClipVault running in the background.
+The five-color brand tray icon keeps ClipVault running in the background.
 
 - **Double-click** the icon — show the window.
 - **Right-click** (or single click) — menu: **Show ClipVault**, **Settings**,
@@ -71,7 +71,7 @@ Open with the sidebar **Settings** button or the tray menu.
 
 | Section | Options |
 |---|---|
-| **Appearance** | Light (Sage / Peach / warm-white) or Dark (charcoal + muted rose) theme. |
+| **Appearance** | Light (Cream / Rose) or Dark (Ink / Slate) theme. |
 | **Storage & retention** | Max entries, max age in days. Pruning removes the oldest non-pinned, non-favorite entries. |
 | **Privacy** | Pause clipboard monitoring; clear history on exit. |
 | **Startup & shortcuts** | Launch at Windows startup, start minimized to tray, global shortcut. |

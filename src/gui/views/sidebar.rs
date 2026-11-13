@@ -16,7 +16,7 @@ pub fn sidebar(state: &AppState) -> Element<'_, Message> {
                 let mut s = if active {
                     theme::primary_button_style(t, status)
                 } else {
-                    // Inactive nav items stay quiet: soft Peach-panel surface,
+                    // Inactive nav items stay quiet: soft ROSE-panel surface,
                     // no filled button look.
                     let mut q = theme::subtle_button_style(t, status);
                     q.background = None;

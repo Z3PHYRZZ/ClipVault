@@ -79,10 +79,10 @@ concurrently by Wave A — do NOT edit them, just call their public functions.
   sizes `sp::TEXT_CAPTION`. Sidebar container keeps `theme::panel_style`.
   Keep both modal `stack!` overlays. Keep frozen `view(state) -> Element<'_, Message>`.
 
-## Palette reminder (exact)
-SAGE #D8E2DC · PEACH #FFE5D9 · PINK #FFCAD4 · ROSE #F4ACB7 · MAUVE #9D8189.
-Light: Sage bg, Peach panels, warm-white cards, Rose interactive, Mauve type.
-Dark: charcoal #1E1B1D with Sage/Pink/Rose accents, lighter Mauve text.
+## Palette reminder (exact, v0.1.1)
+CREAM #F2E9E4 · ROSE #C9ADA7 · MAUVE #9A8C98 · SLATE #4A4E69 · INK #22223B.
+Light: CREAM bg, ROSE panels, CREAM cards, ROSE interactive, INK type.
+Dark: INK bg, SLATE surfaces, CREAM/ROSE accents, CREAM text.
 
 Return in your final message: files written, token changes applied, signatures
 kept, any deviation, any Iced API uncertainty you worked around.

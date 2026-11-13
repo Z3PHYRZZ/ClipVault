@@ -10,7 +10,9 @@ workflow wants ~40 subagents orchestrated, compiling/testing after each phase.
 - Rust installed at `C:\Users\Dodot\.cargo\bin` (bootstrapped this session via winget `Rustlang.Rustup`)
 - MSVC: VS 18 Community — `C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat`, cl/link at `...\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\`
 - Windows SDK: `10.0.26100.0`
-- Brand palette: `#D8E2DC` Sage, `#FFE5D9` Peach, `#FFCAD4` Pastel Pink, `#F4ACB7` Dusty Rose, `#9D8189` Muted Mauve
+- Brand palette (v0.1.1): `#F2E9E4` Cream, `#C9ADA7` Rose, `#9A8C98` Mauve,
+  `#4A4E69` Slate, `#22223B` Ink (coolors.co/22223b-4a4e69-9a8c98-c9ada7-f2e9e4).
+  v0.1.0 used the earlier pastel-rose set.
 
 **What's done — DEFINITION OF DONE essentially met:**
 - Environment: no Rust existed → bootstrapped `Rustlang.Rustup` via winget.
@@ -65,13 +67,13 @@ Unicode symbols (`★ ☆ ✕ ◀ ▶`) that render as tofu boxes in Iced's bund
 Sans. All user-visible UI strings are now plain ASCII: `Pin/Unpin`, `Fav/Unfav`,
 `Copy`, `Delete`, `Prev/Next`, `used N times`, `...`, ` - `. Added
 `theme::active_button_style` + `widgets::state_button` so pinned/favorited state
-reads through Dusty Rose color + 2px border instead of a glyph. Rebuilt release
+reads through ROSE color + 2px border instead of a glyph. Rebuilt release
 exe + installer; re-verified install/run/uninstall (0/0/0).
 
 **No-console fix (2026-11-13):** Added `#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]` to `src/main.rs`. The release PE is now `SUBSYSTEM=2` (WINDOWS/GUI) instead of `3` (CONSOLE), so no conhost/cmd window spawns. Verified: launched detached with zero child processes, no console. Since a GUI-subsystem process has no stderr, switched `tracing` from the console writer to a file writer (`%LOCALAPPDATA%\ClipVault\clipvault.log` via `Arc<File>` MakeWriter, `.with_ansi(false)`) — diagnostics still work (verified log line written). Rebuilt release exe + installer; installed exe subsystem 2; install/run/uninstall 0/124/0.
 
 **INSTALLER (added 2026-11-13):**
-- `installer\Output\ClipVault-0.1.0-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
+- `installer\Output\ClipVault-0.1.1-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
 - `installer\ClipVault.iss` — per-user (no admin), x64, Win10+, brand wizard icon,
   Start Menu + optional desktop shortcuts, optional HKCU Run startup (unchecked),
   optional post-install launch (unchecked), clean uninstall that PRESERVES
@@ -85,10 +87,10 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 **PUBLISHED TO GITHUB (2026-11-13):**
 - Repo: **https://github.com/Z3PHYRZZ/ClipVault** (public, default `main`).
 - Local working dir moved to `C:\Users\Dodot\Documents\GitHub\ClipVault` (was `D:\job done\ClipVault`).
-- 96 files pushed; 3 commits (`Initial commit`, `feat: ClipVault v0.1.0`,
-  `docs: add v0.1.0 release notes`). Worktree clean, local == remote.
-- **Release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.0
-  assets `ClipVault-0.1.0-Setup.exe` (6,388,860 B) + `clipvault.exe` (14,022,656 B).
+- 96 files pushed; 3 commits (`Initial commit`, `feat: ClipVault v0.1.1`,
+  `docs: add v0.1.1 release notes`). Worktree clean, local == remote.
+- **Release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.1
+  assets `ClipVault-0.1.1-Setup.exe` (6,388,860 B) + `clipvault.exe` (14,022,656 B).
 - Docs added for GitHub: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`,
   `docs/INSTALL.md`, `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README got
   badges + docs links. `.gitignore` excludes `target/` and `installer/Output/`.

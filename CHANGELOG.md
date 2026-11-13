@@ -5,6 +5,26 @@ All notable changes to ClipVault are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-11-13
+
+### Changed
+- **Brand palette replaced** across the entire app (GUI theme, tray icon, app
+  icon, badges, buttons, borders, shadows, docs) with the five-color coolors set:
+  Cream `#F2E9E4`, Rose `#C9ADA7`, Mauve `#9A8C98`, Slate `#4A4E69`,
+  Ink `#22223B` — https://coolors.co/palette/22223b-4a4e69-9a8c98-c9ada7-f2e9e4.
+  Light theme: Cream bg / Rose panels / Ink text. Dark theme: Ink bg / Slate
+  surfaces / Cream-Rose accents. Only alpha variants of the five brand colors are
+  used for hairlines and shadows; no unrelated hues remain.
+- Version bumped to 0.1.1 in `Cargo.toml`, `build.rs` (FileVersion/ProductVersion),
+  Inno Setup script, installer filename, and all docs.
+- `src/contracts.rs` now exports `CREAM/ROSE/MAUVE/SLATE/INK` (+ RGB tuples) with
+  backward-compatible `SAGE/PEACH/PINK/ROSE/MAUVE` aliases, so every module
+  resolves to the new colors without API churn.
+- `src/gui/theme.rs` fully rewritten to use brand-color alpha variants instead of
+  hardcoded RGB; button text is INK on light / CREAM on dark for contrast.
+- `src/platform/icon.rs` redrawn: INK rounded square, CREAM clipboard card,
+  SLATE header, ROSE "V" + clip tab, MAUVE outline.
+
 ## [0.1.0] - 2026-11-13
 
 First public release. A complete, private Windows clipboard manager built in Rust
@@ -35,9 +55,9 @@ First public release. A complete, private Windows clipboard manager built in Rus
   and favorite rows; orphaned image assets are garbage-collected.
 
 **GUI**
-- Exact five-color pastel-rose brand palette: Sage `#D8E2DC`, Peach `#FFE5D9`,
-  Pastel Pink `#FFCAD4`, Dusty Rose `#F4ACB7`, Muted Mauve `#9D8189`.
-- Light theme (Sage background, Peach panels, warm-white cards) and a complementary
+- Original five-color pastel-rose palette (replaced in 0.1.1): Sage `#D8E2DC`,
+  Peach `#FFE5D9`, Pastel Pink `#FFCAD4`, Dusty Rose `#F4ACB7`, Muted Mauve `#9D8189`.
+- Light theme (CREAM background, ROSE panels, CREAM cards) and a complementary
   dark theme (deep charcoal, muted rose/sage accents) — not a simple inversion.
 - Token-driven spacing system (`src/gui/spacing.rs`): 4px grid, 14/10/8px radii,
   24/18/14/13/11px type scale; rounded cards, soft borders, subtle shadows,
@@ -99,4 +119,5 @@ First public release. A complete, private Windows clipboard manager built in Rus
 - `CF_BITMAP` (device-dependent HBITMAP) is intentionally skipped; DIB/DIBV5 are
   preferred. RLE-compressed DIBs are rejected.
 
+[0.1.1]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.0

@@ -1,4 +1,4 @@
-# ClipVault v0.1.0
+# ClipVault v0.1.1
 
 First public release — a calm, private Windows clipboard manager built in Rust
 (edition 2024) with Iced 0.13, rusqlite (bundled SQLite + FTS5), and windows-rs 0.62.
@@ -7,7 +7,7 @@ First public release — a calm, private Windows clipboard manager built in Rust
 
 | Asset | What it is |
 |---|---|
-| `ClipVault-0.1.0-Setup.exe` | **Recommended.** Per-user installer (Inno Setup 6). No admin rights, Start Menu + optional desktop shortcut, optional launch-at-startup, clean uninstall that keeps your history. |
+| `ClipVault-0.1.1-Setup.exe` | **Recommended.** Per-user installer (Inno Setup 6). No admin rights, Start Menu + optional desktop shortcut, optional launch-at-startup, clean uninstall that keeps your history. |
 | `clipvault.exe` | Portable single-file executable. Run from any folder, no install. |
 
 Windows 10/11 x64 only. No .NET, no VC++ redistributable, no network needed.
@@ -27,14 +27,14 @@ Windows 10/11 x64 only. No .NET, no VC++ redistributable, no network needed.
 - **Startup & singleton** — optional HKCU Run entry, named-mutex single instance.
 - **Privacy** — local-only SQLite storage, pause monitoring, clear-on-exit,
   no telemetry, no network dependency.
-- **Polished UI** — exact five-color pastel-rose palette, light + complementary dark
+- **Polished UI** — exact five-color coolors palette, light + complementary dark
   theme, rounded cards, soft shadows, token-driven spacing, empty states.
 - **No console window** — GUI-subsystem binary; diagnostics go to
   `%LOCALAPPDATA%\ClipVault\clipvault.log`.
 
 ## Install
 
-Double-click `ClipVault-0.1.0-Setup.exe`. (SmartScreen may warn that the binary is
+Double-click `ClipVault-0.1.1-Setup.exe`. (SmartScreen may warn that the binary is
 unsigned — click **More info > Run anyway**.)
 
 Full docs: [docs/index.md](https://github.com/Z3PHYRZZ/ClipVault/blob/main/docs/index.md)

@@ -13,7 +13,7 @@ them at hand. **No network, no telemetry, no accounts, no console window.** Buil
 with Rust (edition 2024), Iced 0.13, rusqlite (bundled SQLite + FTS5), and windows-rs.
 
 **Download:** [latest Release](https://github.com/Z3PHYRZZ/ClipVault/releases/latest) —
-grab `ClipVault-0.1.0-Setup.exe` and double-click it. Full docs in [`docs/`](docs/index.md).
+grab `ClipVault-0.1.1-Setup.exe` and double-click it. Full docs in [`docs/`](docs/index.md).
 
 | | |
 |---|---|
@@ -38,26 +38,30 @@ grab `ClipVault-0.1.0-Setup.exe` and double-click it. Full docs in [`docs/`](doc
 - **Startup** — optional HKCU Run registration, named-mutex single instance,
   start minimized, graceful shutdown with WAL checkpoint.
 - **Privacy** — pause monitoring, clear-on-exit, ignored apps, local-only storage.
-- **Polished GUI** — exact five-color pastel-rose brand palette, light + complementary
+- **Polished GUI** — exact five-color coolors palette, light + complementary
   dark themes, rounded cards, soft borders, subtle shadows, empty states.
 
-## Brand palette (official — no other accent colors)
+## Brand palette (v0.1.1 — official, no other accent colors)
+
+From [coolors.co/22223b-4a4e69-9a8c98-c9ada7-f2e9e4](https://coolors.co/palette/22223b-4a4e69-9a8c98-c9ada7-f2e9e4).
 
 | Role | Hex | Use |
 |---|---|---|
-| Sage | `#D8E2DC` | light-mode background |
-| Peach | `#FFE5D9` | secondary panels / surfaces |
-| Pastel Pink | `#FFCAD4` | selected nav, highlights |
-| Dusty Rose | `#F4ACB7` | buttons, active, hover |
-| Muted Mauve | `#9D8189` | secondary text, icons, borders |
+| Cream | `#F2E9E4` | light-mode background, cards, light text on dark |
+| Rose | `#C9ADA7` | secondary panels, buttons, active state, selection |
+| Mauve | `#9A8C98` | secondary text, icons, borders, quiet buttons |
+| Slate | `#4A4E69` | dark surfaces, header accents |
+| Ink | `#22223B` | dark-mode background, primary text, outlines |
 
-Light: Sage bg, Peach panels, warm-white cards, Rose interactive, Mauve type.
-Dark: deep charcoal (`#1E1B1D`) with Sage/Pink/Rose accents and lighter Mauve text —
-complementary, not inverted. Neutral white/charcoal/grayscale only for contrast.
+Light: Cream bg, Rose panels, Cream cards, Rose interactive, Ink type.
+Dark: Ink bg, Slate surfaces, Cream/Rose accents, Cream text on dark —
+complementary, not inverted. Every UI color, the tray icon, and the app icon are
+drawn from these five hexes (alpha variants for hairlines/shadows only). Neutral
+white/charcoal/grayscale permitted only for readability.
 
 ## Install (recommended)
 
-Double-click **`installer\Output\ClipVault-0.1.0-Setup.exe`**. Per-user install
+Double-click **`installer\Output\ClipVault-0.1.1-Setup.exe`**. Per-user install
 (no admin rights), Start Menu + optional desktop shortcut, optional launch at
 startup, clean uninstall that keeps your clipboard history. Full installer docs
 in `PACKAGING.md`. Rebuild the installer with `installer\build-installer.bat`.

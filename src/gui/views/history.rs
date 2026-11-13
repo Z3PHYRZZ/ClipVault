@@ -51,7 +51,7 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
                 .style(move |t: &Theme| {
                     let mut s = crate::gui::theme::card_style(t);
                     if selected {
-                        s.background = Some(Background::Color(crate::contracts::PINK));
+                        s.background = Some(Background::Color(crate::contracts::MAUVE));
                         s.border = Border {
                             radius: sp::r(sp::RADIUS_CARD),
                             width: 2.0,

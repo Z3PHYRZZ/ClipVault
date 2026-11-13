@@ -354,10 +354,9 @@ pub struct AppState {
 12. Return in your final message: files written, the exact contract signatures you implemented,
     any deviation from the contract and why, and any Windows limitation + proposed resolution.
 
-## Palette reference (from CONTRACT, use gui/theme.rs constants, never raw hex elsewhere)
-Sage `#D8E2DC` (216,226,220) · Peach `#FFE5D9` (255,229,217) · Pastel Pink `#FFCAD4`
-(255,202,212) · Dusty Rose `#F4ACB7` (244,172,183) · Muted Mauve `#9D8189` (157,129,137).
-Light bg Sage, panels Peach, selection/primary-accent Pastel Pink, buttons/active/hover
-Dusty Rose, secondary text/icons/borders Muted Mauve, cards warm white `#FDFBF9`.
-Dark: charcoal `#1E1B1D` bg, `#262226`/`#2E282C` surfaces, Sage/Pink/Rose accents,
-lighter Mauve `#C9AEB5` text — complementary, not inverted.
+## Palette reference (v0.1.1, use `src/contracts.rs` constants, never raw hex elsewhere)
+CREAM `#F2E9E4` (242,233,228) · ROSE `#C9ADA7` (201,173,167) · MAUVE `#9A8C98`
+(154,140,152) · SLATE `#4A4E69` (74,78,105) · INK `#22223B` (34,34,59).
+Light bg CREAM, panels/buttons/selection ROSE, secondary text/icons/borders MAUVE,
+cards CREAM, primary text INK. Dark: INK bg, SLATE surfaces, CREAM/ROSE accents,
+CREAM text — complementary, not inverted. Alpha variants of these five only.

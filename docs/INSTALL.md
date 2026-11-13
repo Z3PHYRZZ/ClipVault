@@ -8,8 +8,8 @@
 
 ## Install
 
-1. Download **`ClipVault-0.1.0-Setup.exe`** from the
-   [GitHub Release](https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.0).
+1. Download **`ClipVault-0.1.1-Setup.exe`** from the
+   [GitHub Release](https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.1).
 2. Double-click it. If Windows SmartScreen warns about an unsigned app, click
    **More info > Run anyway** (the binary is built from source in this repo; it is
    not code-signed).
@@ -22,7 +22,7 @@
 ## Silent / scripted install
 
 ```
-ClipVault-0.1.0-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR=<path>
+ClipVault-0.1.1-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR=<path>
 ```
 
 Useful flags: `/LOG=<file>` for an install log, `/NOICONS` to skip shortcuts,
@@ -32,7 +32,7 @@ Useful flags: `/LOG=<file>` for an install log, `/NOICONS` to skip shortcuts,
 
 - Start Menu > **ClipVault**, or the desktop shortcut, or double-click `clipvault.exe`.
 - On first launch, ClipVault creates `%LOCALAPPDATA%\ClipVault\` and begins watching
-  the clipboard. A tray icon appears (pastel rose "V").
+  the clipboard. A tray icon appears (brand-palette "V").
 - **No console window appears** — the app is a GUI-subsystem binary.
 
 ## Data locations

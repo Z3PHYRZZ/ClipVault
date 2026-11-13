@@ -17,7 +17,7 @@ ClipVault/
   TASKS.md                    # task ledger
   SUMMARY.md                  # long-task state (goal, done, next)
   assets/
-    icon.svg                   # pastel rose brand mark
+    icon.svg                   # brand-palette icon
     icon.ico                   # generated tray/application icon
   migrations/
     001_init.sql
@@ -207,22 +207,21 @@ Design tokens live in `src/gui/theme.rs` (palette/styles) and `src/gui/spacing.r
 a type hierarchy of 24/18/14/13/11 px. Rounded cards (14px), buttons (10px),
 badges (8px), soft 1px Mauve-alpha hairline borders, subtle 0.08-alpha shadows,
 and hover/press color blends toward PINK/PEACH/MAUVE. Pin/favorite state reads
-through Dusty Rose fill + 2px border (`active_button_style`) instead of glyphs —
+through ROSE fill + 2px border (`active_button_style`) instead of glyphs —
 Iced's bundled Fira Sans has no star/dingbat glyphs and renders them as tofu, so
 ALL user-visible UI strings are plain ASCII.
 
 | Role | Hex | RGB |
 |---|---|---|
-| Sage (light bg) | `#D8E2DC` | 216,226,220 |
-| Peach (secondary surfaces) | `#FFE5D9` | 255,229,217 |
-| Pastel Pink (primary accent / selection) | `#FFCAD4` | 255,202,212 |
-| Dusty Rose (buttons / active / hover) | `#F4ACB7` | 244,172,183 |
-| Muted Mauve (secondary text / icons / borders) | `#9D8189` | 157,129,137 |
+| Cream (light bg / cards / light text) | `#F2E9E4` | 242,233,228 |
+| Rose (panels / buttons / active / selection) | `#C9ADA7` | 201,173,167 |
+| Mauve (secondary text / icons / borders) | `#9A8C98` | 154,140,152 |
+| Slate (dark surfaces / header accents) | `#4A4E69` | 74,78,105 |
+| Ink (dark bg / primary text / outlines) | `#22223B` | 34,34,59 |
 
-Light: Sage background, Peach panels, warm-neutral/white cards, Rose interactive,
-Mauve typography. Dark: deep charcoal (`#1E1B1D`, `#262226`, `#2E282C` — permitted
-neutrals) with Sage/Pink/Rose accents and a lighter Mauve (`#C9AEB5`) for text;
-**not** a simple inversion. `iced::Theme::custom` with a `palette::Palette` derived
+Light: Cream background, Rose panels, Cream cards, Rose interactive, Ink typography.
+Dark: Ink bg, Slate surfaces, Cream/Rose accents, Cream text — **not** a simple
+inversion. `iced::Theme::custom` with a `palette::Palette` derived
 from these hexes; all widget styling goes through `gui/theme.rs` so no stray color
 ever enters. Neutral white/charcoal/grayscale only for contrast. Rounded cards
 (radius 12), 1px soft borders (Mauve at low alpha), subtle shadow via layered
