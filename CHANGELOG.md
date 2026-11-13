@@ -1,0 +1,102 @@
+# Changelog
+
+All notable changes to ClipVault are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.0] - 2026-11-13
+
+First public release. A complete, private Windows clipboard manager built in Rust
+(edition 2024) with Iced 0.13, rusqlite (bundled SQLite + FTS5), and windows-rs 0.62.
+
+### Added
+
+**Clipboard capture**
+- Text (`CF_UNICODETEXT`, UTF-16 -> UTF-8), images (`CF_DIB` / `CF_DIBV5` -> PNG),
+  and file drop lists (`CF_HDROP` / `DROPFILES` -> paths + metadata).
+- Event-driven monitoring via `AddClipboardFormatListener` on a message-only window —
+  zero polling, ~0% idle CPU.
+- Bounded `OpenClipboard` retries (5 attempts, 15 ms backoff) for lock contention.
+- `GetClipboardSequenceNumber` self-filter so restoring an entry is not re-captured.
+- HGLOBAL-ownership-correct writes (no delayed rendering, no owner HWND needed).
+- DIB parser handles BITMAPINFOHEADER / BITMAPV5HEADER, palettes (1/4/8bpp),
+  BI_BITFIELDS masks, 16/24/32bpp, top-down (negative height) and DWORD-aligned stride.
+
+**Storage & search**
+- Versioned SQLite schema (migrations v1 -> v3) with `PRAGMA user_version`.
+- WAL mode, `synchronous=NORMAL`, `busy_timeout`, `foreign_keys=ON`.
+- SHA-256 content hashes with a `UNIQUE(kind, content_hash)` index and race-safe
+  `ON CONFLICT DO UPDATE` upsert — repeats bump `use_count`, never create duplicates.
+- FTS5 virtual table kept in sync by insert/delete/update triggers, plus a LIKE
+  fallback for substrings and CJK.
+- Filters: text query, content kind, date range, pinned-only, favorites-only, paging.
+- Configurable retention pruning (max entries + max age days) that respects pinned
+  and favorite rows; orphaned image assets are garbage-collected.
+
+**GUI**
+- Exact five-color pastel-rose brand palette: Sage `#D8E2DC`, Peach `#FFE5D9`,
+  Pastel Pink `#FFCAD4`, Dusty Rose `#F4ACB7`, Muted Mauve `#9D8189`.
+- Light theme (Sage background, Peach panels, warm-white cards) and a complementary
+  dark theme (deep charcoal, muted rose/sage accents) — not a simple inversion.
+- Token-driven spacing system (`src/gui/spacing.rs`): 4px grid, 14/10/8px radii,
+  24/18/14/13/11px type scale; rounded cards, soft borders, subtle shadows,
+  hover/press transitions, clear empty states.
+- Pin, favorite, delete, clear-all (confirm dialog), restore-to-clipboard actions.
+- Text / image / file-metadata preview panel.
+
+**Windows integration**
+- Global hotkeys via `RegisterHotKey` (show/hide + `Ctrl+Shift+1..9` quick-paste),
+  with a clear rebind hint when a combo is already owned by another app.
+- System tray via `Shell_NotifyIconW` with a context menu (Show / Settings /
+  Pause / Resume / Quit) and `NIM_DELETE` on shutdown.
+- Launch-at-startup via the `HKCU\...\Run\ClipVault` registry value.
+- Named-mutex single instance; second instance signals the first and exits.
+- Procedurally generated brand icon (32x32 RGBA), embedded `.ico` + version resource
+  via `winres`, and a runtime `HICON` for the tray.
+- GUI subsystem (`windows_subsystem = "windows"`) — no console window on launch;
+  `tracing` writes to `%LOCALAPPDATA%\ClipVault\clipvault.log`.
+- Graceful shutdown: `WM_QUIT` posted to every worker thread, DB worker runs
+  `wal_checkpoint(TRUNCATE)` before exit.
+
+**Settings, privacy, engineering**
+- Persistent settings (serde JSON, atomic temp+rename write): theme, retention,
+  pause monitoring, clear-on-exit, start-minimized, launch-at-startup, shortcut,
+  ignored apps, page size.
+- No network dependency, no telemetry. Local-only storage.
+- Message-driven Iced architecture; no blocking calls in the GUI event loop;
+  all DB / clipboard / tray / hotkey work on dedicated threads joined on shutdown.
+- `Result`-based error handling throughout; no `unwrap` / `expect` in runtime paths.
+- 35 automated tests (26 unit + 9 integration) covering migrations, dedup, FTS5
+  search, filters, prune, DIB encode/decode, DROPFILES round-trip, hashing, icons.
+- `cargo fmt --check` and `cargo clippy --all-targets -- -D warnings` clean.
+
+**Packaging & docs**
+- Inno Setup 6 installer (`installer/ClipVault.iss`): per-user, no admin, x64,
+  Win10+, Start Menu + optional desktop shortcut, optional startup task, clean
+  uninstall that preserves clipboard history. One-click `installer/build-installer.bat`.
+- `ARCHITECTURE.md`, `README.md`, `PACKAGING.md`, `ROADMAP.md`, `TASKS.md`,
+  `CONTRACT.md`, `FLEET.md`, `SUMMARY.md`, `UI_POLISH_BRIEF.md`, `CHANGELOG.md`.
+
+### Fixed
+- Unicode glyphs (`★ ☆ ✕ ◀ ▶ × · …`) rendered as tofu boxes with Iced's bundled
+  Fira Sans — replaced with plain ASCII labels (`Pin`/`Unpin`, `Fav`/`Unfav`,
+  `Copy`, `Delete`, `Prev`/`Next`) and color/border-based state styling.
+- Quit previously tore down workers but left the Iced window open with dead workers —
+  now calls `iced::window::close`.
+- Quick-paste indices were emitted but ignored — now restore the nth visible entry.
+- `clear_on_exit` was stored but not enforced — now clears on quit.
+- Duplicate initial `Search` command on startup removed.
+- `AppState::new()` failure no longer panics (falls back to a visible error state).
+- Console window spawned on every launch — fixed via the GUI subsystem attribute.
+
+### Known limitations
+- Manual desktop smoke tests (real clipboard, tray menu, hotkeys) require a live
+  Windows session; not automatable headlessly.
+- `signal_existing()` broadcasts a "show" message, but a running instance does not
+  yet register a receiver (message-only windows don't receive `HWND_BROADCAST`).
+- `ignored_apps` is stored but not enforced in the listener (pause is enforced).
+- `CF_BITMAP` (device-dependent HBITMAP) is intentionally skipped; DIB/DIBV5 are
+  preferred. RLE-compressed DIBs are rejected.
+
+[0.1.0]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.0

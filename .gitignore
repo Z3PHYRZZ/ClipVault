@@ -1,0 +1,34 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+*.obj
+*.ilk
+*.exp
+*.lib
+
+# Inno Setup output (built by installer/build-installer.bat)
+# Keep the .iss and .bat, ignore the generated Setup.exe (published in Releases).
+/installer/Output/
+
+# Local app data / diagnostics
+clipvault.log
+*.db
+*.db-shm
+*.db-wal
+
+# Editor / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Signing material
+*.pfx
+*.cer
+
+# Misc legacy
+WLand.log
+WLandDiagnose.txt
+WLandExpanded.png

@@ -1,0 +1,14 @@
+# ClipVault build configuration.
+# windows-rs needs the MSVC linker (VS 18 Community): the default
+# x86_64-pc-windows-msvc target uses link.exe from the VS install, which rustc
+# locates automatically when the toolchain is the MSVC one. No custom linker
+# override is needed as long as `vcvars64.bat` environment is active or the
+# Windows SDK + MSVC are installed (they are on this machine:
+#   C:\Program Files\Microsoft Visual Studio\18\Community
+#   Windows SDK 10.0.26100.0).
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[build]
+# Incremental off for release-like reproducibility in dev too (small project).
+incremental = true
