@@ -17,6 +17,12 @@ pub enum Message {
     TogglePinnedOnly(bool),
     ToggleFavoritesOnly(bool),
     ClearFilters,
+    /// Message-driven hover animation (mouse_area on_enter/on_exit).
+    /// `HoverCard(Some(id))` = hovering a history row; None = pointer left.
+    /// `HoverNav(Some(n))` = 0 All, 1 Pinned, 2 Favorites, 3 Settings,
+    /// 4 About, 5 Quit; None = pointer left the sidebar item.
+    HoverCard(Option<i64>),
+    HoverNav(Option<u8>),
     /// Entry actions.
     SelectEntry(i64),
     PinEntry(i64, bool),

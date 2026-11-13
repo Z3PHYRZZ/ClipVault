@@ -91,13 +91,21 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
   (pink/mauve), **v0.1.3** (cream/ink) — all live with installer + portable exe.
 - **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3
   (same tag, re-uploaded 2026-11-13 with the features below)
-  assets `ClipVault-0.1.3-Setup.exe` (6,391,753 B) + `clipvault.exe` (14,039,040 B).
+  assets `ClipVault-0.1.3-Setup.exe` (6,391,602 B) + `clipvault.exe` (14,037,504 B).
 - Docs: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`, `docs/INSTALL.md`,
   `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README badges + docs links.
   `.gitignore` excludes `target/` and `installer/Output/`.
 - All gates re-verified: check 0/0, fmt OK, clippy -D warnings 0, **40 tests**
   (29 unit + 10 db + 1 v3->v4 migration), release exe `0.1.3.0`
   (PE subsystem 2), install/run/uninstall 0/124/0.
+
+**v0.1.3 UI rework (same tag):** Bigger type scale (28/21/16/14/12), roomier
+padding/radii, larger buttons with clear states, and message-driven hover
+animation (`HoverCard`/`HoverNav` -> card_hover_style/nav_hover_style lift shadow
+3px + 2px border). Frozen `UI_REWORK_SPEC.md` + `UI_REWORK_WAVE3.md`. Swarm: 6
+agents spawned; shared rate cap starved 5, 1 (spacing.rs) + 1 (history.rs)
+landed; integrator welded the rest. Review found + fixed INK-on-INvisible contrast
+bug (text now from actual bg luminance, all >= 4.5:1). 40 tests pass.
 
 **v0.1.3 feature additions (same tag, no version bump):** Photo preview —
 lazy 52x42 thumbnails in the history list (`image::Handle::from_path`, no GUI

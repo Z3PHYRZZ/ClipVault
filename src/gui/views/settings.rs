@@ -66,7 +66,7 @@ pub fn settings_view(state: &AppState) -> Element<'_, Message> {
         Space::with_height(sp::GAP_SECTION),
         widgets::icon_button("Done", Message::CloseSettings),
     ]
-    .spacing(sp::GAP_TIGHT)
+    .spacing(sp::GAP_SECTION)
     .padding(sp::CONTENT_PAD);
 
     container(scrollable(content))

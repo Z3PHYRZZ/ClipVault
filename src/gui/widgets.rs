@@ -1,4 +1,6 @@
 //! Reusable styled widgets: rounded cards, badges, empty states, buttons.
+//! v0.1.3 UI rework: bigger type (via `sp::*` tokens), roomier hit areas, and
+//! message-driven hover via `hover_card` / `hover_button`.
 use crate::domain::ContentKind;
 use crate::gui::spacing as sp;
 use crate::gui::theme;
@@ -10,6 +12,14 @@ pub fn card<'a, M: 'a>(content: impl Into<Element<'a, M>>) -> Element<'a, M> {
     container(content)
         .padding(sp::pad(sp::CARD_PAD))
         .style(|t: &Theme| theme::card_style(t))
+        .into()
+}
+
+/// A card whose style reacts to a hovered flag (message-driven lift animation).
+pub fn hover_card<'a, M: 'a>(content: impl Into<Element<'a, M>>, hovered: bool) -> Element<'a, M> {
+    container(content)
+        .padding(sp::pad(sp::CARD_PAD))
+        .style(move |t: &Theme| theme::card_hover_style(t, hovered))
         .into()
 }
 
@@ -37,7 +47,7 @@ pub fn empty_state<'a, M: 'a>(title: &str, subtitle: &str) -> Element<'a, M> {
     .into()
 }
 
-/// A rose-colored icon/text button.
+/// A prominent primary button.
 pub fn icon_button<'a, M: Clone + 'a>(label: &str, msg: M) -> Element<'a, M> {
     button(text(label.to_string()).size(sp::TEXT_LABEL))
         .on_press(msg)
@@ -61,6 +71,21 @@ pub fn state_button<'a, M: Clone + 'a>(label: &str, active: bool, msg: M) -> Ele
         .on_press(msg)
         .padding(sp::pad(sp::BUTTON_PAD))
         .style(theme::active_button_style(active))
+        .into()
+}
+
+/// Button with an explicit hover flag (message-driven hover animation).
+/// `active` selects the INK fill; `hovered` lifts the shadow + thickens border.
+pub fn hover_button<'a, M: Clone + 'a>(
+    label: &str,
+    hovered: bool,
+    active: bool,
+    msg: M,
+) -> Element<'a, M> {
+    button(text(label.to_string()).size(sp::TEXT_LABEL))
+        .on_press(msg)
+        .padding(sp::pad(sp::BUTTON_PAD))
+        .style(move |t: &Theme, _status| theme::nav_hover_style(t, hovered, active))
         .into()
 }
 

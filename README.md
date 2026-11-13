@@ -42,7 +42,9 @@ grab `ClipVault-0.1.3-Setup.exe` and double-click it. Full docs in [`docs/`](doc
   start minimized, graceful shutdown with WAL checkpoint.
 - **Privacy** — pause monitoring, clear-on-exit, ignored apps, local-only storage.
 - **Polished GUI** — exact two-color brand palette, light + complementary
-  dark themes, rounded cards, soft borders, subtle shadows, empty states.
+  dark themes, rounded cards, soft borders, subtle shadows, empty states,
+  readable 16px body type, larger button hit areas, and message-driven hover
+  animation (shadow lift + border on cards and nav items).
 
 ## Brand palette (v0.1.3 — official, two colors only)
 

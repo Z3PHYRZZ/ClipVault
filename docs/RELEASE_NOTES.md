@@ -29,6 +29,12 @@ contrast, and alpha variants of the two for hairlines/shadows):
 
 ## What's new in this build (same v0.1.3 tag)
 
+- **UI rework** — bigger readable fonts (28/21/16/14/12), roomier padding and
+  radii, larger button hit areas with clear active/hover/pressed states, and
+  **message-driven hover animation**: history cards and sidebar items lift their
+  shadow by 3px, widen the border to 2px and blend the background on pointer
+  enter/exit. Text contrast is chosen from the actual background, so nothing is
+  invisible in either theme.
 - **Photo preview** — image entries show a lazy-loaded thumbnail directly in the
   history list, and the preview panel renders the full photo (300px, `Contain`)
   with its pixel dimensions. No GUI-thread file reads.

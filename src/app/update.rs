@@ -186,6 +186,16 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
             refresh_search(state);
             Task::none()
         }
+        // Hover is pure state: styles recompute on the next frame, giving a
+        // smooth lift/border animation without a blocking timer.
+        Message::HoverCard(id) => {
+            state.hovered_card = id;
+            Task::none()
+        }
+        Message::HoverNav(n) => {
+            state.hovered_nav = n;
+            Task::none()
+        }
 
         // ---- entry actions ----
         Message::SelectEntry(id) => {

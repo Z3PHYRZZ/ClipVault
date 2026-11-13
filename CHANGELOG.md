@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.3] - 2026-11-13
 
+### Changed (UI rework)
+- **Bigger, readable type**: raised the scale to display 28 / title 21 / body 16 /
+  label 14 / caption 12 px (`src/gui/spacing.rs`). Roomier card/button/panel/
+  content/status padding ([12,16] -> [16,24] panels, 32px content), rounder radii
+  (card 16, button 12, badge 9, input 12), larger 20px section gaps.
+- **Buttons**: bigger hit areas (`BUTTON_PAD [12,16]`), 2px borders on primary,
+  clearer active/hover/pressed blends, consistent `sp::*` sizing everywhere.
+- **Message-driven hover animation**: `mouse_area.on_enter/on_exit` on history
+  cards and every sidebar nav/bottom item flips `AppState.hovered_card` /
+  `hovered_nav`; `card_hover_style` / `nav_hover_style` lift the shadow by 3px,
+  widen the border to 2px and blend the background. Styles recompute per frame.
+- New `hover_card` / `hover_button` widget helpers; `HoverCard(Option<i64>)` /
+  `HoverNav(Option<u8>)` messages + state fields in all three `AppState`
+  constructors (state / supervisor / main fallback).
+- **Contrast fix (reviewed)**: button/panel/badge text is now chosen from the
+  ACTUAL background luminance (`button_text(bg)`), removing invisible
+  INK-on-INK text on dark-theme primary/active buttons and CREAM-on-CREAM on
+  dark panels. All combinations now >= 4.5:1 (WCAG AA).
+
 ### Added
 - **Photo preview**: image entries now show a lazy-loaded thumbnail (52x42) in
   the history list via `iced::image::Handle::from_path` — no GUI-thread file read.

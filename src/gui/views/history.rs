@@ -1,7 +1,9 @@
 //! Scrollable clipboard history list with per-entry actions.
 use crate::app::{AppState, Message};
+use crate::contracts::{CREAM, INK};
 use crate::domain::ContentKind;
 use crate::gui::spacing as sp;
+use crate::gui::theme;
 use crate::gui::widgets;
 use iced::widget::{Space, column, container, image, row, scrollable, text};
 use iced::{Background, Border, Element, Length, Theme};
@@ -17,6 +19,7 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
     let mut list = column![].spacing(sp::GAP_TIGHT);
     for entry in &state.entries {
         let selected = state.selected == Some(entry.id);
+        let hovered = state.hovered_card == Some(entry.id);
         let id = entry.id;
         let pinned = entry.pinned;
         let favorite = entry.favorite;
@@ -75,22 +78,26 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
         .spacing(sp::GAP_TIGHT)
         .align_y(iced::Alignment::Center);
 
-        let card =
-            container(iced::widget::mouse_area(row_content).on_press(Message::SelectEntry(id)))
-                .padding(sp::pad(sp::ROW_PAD))
-                .width(Length::Fill)
-                .style(move |t: &Theme| {
-                    let mut s = crate::gui::theme::card_style(t);
-                    if selected {
-                        s.background = Some(Background::Color(crate::contracts::CREAM));
-                        s.border = Border {
-                            radius: sp::r(sp::RADIUS_CARD),
-                            width: 2.0,
-                            color: crate::contracts::INK,
-                        };
-                    }
-                    s
-                });
+        let card = container(
+            iced::widget::mouse_area(row_content)
+                .on_enter(Message::HoverCard(Some(id)))
+                .on_exit(Message::HoverCard(None))
+                .on_press(Message::SelectEntry(id)),
+        )
+        .padding(sp::pad(sp::ROW_PAD))
+        .width(Length::Fill)
+        .style(move |t: &Theme| {
+            let mut s = theme::card_hover_style(t, hovered);
+            if selected {
+                s.background = Some(Background::Color(CREAM));
+                s.border = Border {
+                    radius: sp::r(sp::RADIUS_CARD),
+                    width: sp::HOVER_BORDER,
+                    color: INK,
+                };
+            }
+            s
+        });
         list = list.push(card);
     }
 

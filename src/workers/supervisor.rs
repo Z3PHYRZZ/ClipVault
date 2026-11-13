@@ -43,6 +43,8 @@ pub fn init() -> Result<AppState, String> {
         total_count: 0,
         selected: None,
         preview_bytes: None,
+        hovered_card: None,
+        hovered_nav: None,
         show_settings: false,
         show_clear_confirm: false,
         show_about: false,
