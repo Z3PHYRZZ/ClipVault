@@ -47,6 +47,7 @@ fn initialize() -> (AppState, Task<Message>) {
                     preview_bytes: None,
                     hovered_card: None,
                     hovered_nav: None,
+                    window_hidden: false,
                     show_settings: false,
                     show_clear_confirm: false,
                     show_about: false,

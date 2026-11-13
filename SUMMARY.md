@@ -39,11 +39,11 @@ workflow wants ~40 subagents orchestrated, compiling/testing after each phase.
   - `cargo check` — 0 errors / 0 warnings
   - `cargo fmt --check` — clean
   - `cargo clippy --all-targets -- -D warnings` — 0 warnings
-  - `cargo test` — **35 passed / 0 failed** (26 lib unit + 9 integration)
+  - `cargo test` — **40 passed / 0 failed** (29 unit + 11 integration)
   - `cargo build` (dev) — links a real Windows .exe
   - `cargo build --release` — **succeeded**, `target/release/clipvault.exe` (14 MB,
     self-contained, `+crt-static`, LTO, stripped)
-  - `cargo test --release` — in progress (final gate)
+  - `cargo test --release` — 40 passed / 0 failed
 
 **Fleet reality (honest):** 40 agent slots dispatched across 4 planned waves.
 A shared API rate limit (30 req/min/key) 429-killed 6 of the first 7 concurrent
@@ -104,7 +104,8 @@ padding/radii, larger buttons with clear states, and message-driven hover
 animation (`HoverCard`/`HoverNav` -> card_hover_style/nav_hover_style lift shadow
 3px + 2px border). Frozen `UI_REWORK_SPEC.md` + `UI_REWORK_WAVE3.md`. Swarm: 6
 agents spawned; shared rate cap starved 5, 1 (spacing.rs) + 1 (history.rs)
-landed; integrator welded the rest. Review found + fixed INK-on-INvisible contrast
+landed; integrator welded the rest. Review found + fixed an INK-on-INK invisible
+text contrast
 bug (text now from actual bg luminance, all >= 4.5:1). 40 tests pass.
 
 **v0.1.3 feature additions (same tag, no version bump):** Photo preview —
@@ -141,8 +142,8 @@ in source, no unrelated accents. Version bumped everywhere; CHANGELOG has the
 - `cargo check` — 0 errors / 0 warnings
 - `cargo fmt --check` — clean
 - `cargo clippy --all-targets -- -D warnings` — 0 warnings
-- `cargo test` — 35 passed / 0 failed
-- `cargo test --release` — 35 passed / 0 failed
+- `cargo test` — 40 passed / 0 failed
+- `cargo test --release` — 40 passed / 0 failed
 - `cargo build --release` — `target/release/clipvault.exe` (14,016,000 bytes,
   LTO, stripped, `+crt-static`, embedded icon + version resource)
 - Startup smoke — release exe stays up 5s, logs "ClipVault starting", no panic

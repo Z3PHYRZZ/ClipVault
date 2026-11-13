@@ -15,7 +15,7 @@ Documentation files (ARCHITECTURE.md, ROADMAP.md, TASKS.md) created before any c
 | 8 | System tray & background startup | `tray_full.rs` (Shell_NotifyIconW + context menu + NIM_DELETE), `startup.rs` (HKCU Run), `singleton.rs` (named mutex), graceful quit via ThreadHandle | build + manual smoke | **done** (manual smoke pending) |
 | 9 | Settings, retention, privacy | `config/settings.rs` serde JSON + atomic write, Settings view, retention prune worker, privacy toggles | `cargo test` | **done** |
 | 10 | Performance & memory | event-driven listener (zero idle CPU), paged history, asset-on-disk images, `tracing` file/stderr, graceful shutdown + WAL checkpoint | `cargo clippy -D warnings`, `cargo test` | **done** |
-| 11 | Automated tests & Windows packaging | 35 tests, `winres` icon embed, generated `.ico`, README/PACKAGING docs, `cargo build --release` | release build + `cargo test --release` | **done** |
+| 11 | Automated tests & Windows packaging | 40 tests, `winres` icon embed, generated `.ico`, README/PACKAGING docs, `cargo build --release` | release build + `cargo test --release` | **done** |
 
 ## Cross-cutting invariants (checked every phase)
 - No `unwrap()` / `expect()` in runtime paths.

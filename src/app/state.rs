@@ -52,6 +52,8 @@ pub struct AppState {
     /// Explicit hover state (message-driven hover animation, not just button status).
     pub hovered_card: Option<i64>,
     pub hovered_nav: Option<u8>,
+    /// Whether the main window is currently minimized (global show/hide hotkey).
+    pub window_hidden: bool,
     pub show_settings: bool,
     pub show_clear_confirm: bool,
     pub show_about: bool,

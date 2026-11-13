@@ -67,9 +67,36 @@ fn restore(state: &AppState, id: i64) -> Task<Message> {
     )
 }
 
+/// Apply a show/hide to the main window. `get_oldest()` resolves the primary
+/// window id; on show we also restore focus (the point of a global hotkey).
+fn window_task(hide: bool) -> Task<Message> {
+    iced::window::get_oldest().then(move |maybe_id| {
+        if let Some(id) = maybe_id {
+            if hide {
+                iced::window::minimize(id, true)
+            } else {
+                Task::batch(vec![
+                    iced::window::minimize(id, false),
+                    iced::window::gain_focus(id),
+                ])
+            }
+        } else {
+            Task::none()
+        }
+    })
+}
+
 pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
     match msg {
-        Message::Noop | Message::ShowWindow | Message::HideWindow => Task::none(),
+        Message::Noop => Task::none(),
+        Message::ShowWindow => {
+            state.window_hidden = false;
+            window_task(false)
+        }
+        Message::HideWindow => {
+            state.window_hidden = true;
+            window_task(true)
+        }
 
         // ---- worker results ----
         Message::Worker(ev) => match *ev {
@@ -115,7 +142,11 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
                     Task::none()
                 }
             },
-            WorkerEvent::Hotkey(crate::domain::ShortcutAction::ShowHide) => Task::none(),
+            WorkerEvent::Hotkey(crate::domain::ShortcutAction::ShowHide) => {
+                let hide = !state.window_hidden;
+                state.window_hidden = hide;
+                window_task(hide)
+            }
             WorkerEvent::Hotkey(crate::domain::ShortcutAction::QuickPaste(n)) => {
                 // Quick-paste 1..9 maps to the nth row in the current (paged,
                 // filtered) history. Out-of-range indices are a no-op.
@@ -127,7 +158,10 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
                     Task::none()
                 }
             }
-            WorkerEvent::Tray(TrayAction::Show) => Task::none(),
+            WorkerEvent::Tray(TrayAction::Show) => {
+                state.window_hidden = false;
+                window_task(false)
+            }
             WorkerEvent::Tray(TrayAction::Settings) => {
                 state.show_settings = true;
                 Task::none()

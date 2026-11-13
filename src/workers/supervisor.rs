@@ -45,6 +45,9 @@ pub fn init() -> Result<AppState, String> {
         preview_bytes: None,
         hovered_card: None,
         hovered_nav: None,
+        // Iced 0.13 has no true "start hidden in tray" primitive; the window
+        // opens visible and the global show/hide hotkey owns minimized state.
+        window_hidden: false,
         show_settings: false,
         show_clear_confirm: false,
         show_about: false,

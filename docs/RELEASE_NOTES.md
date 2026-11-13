@@ -35,6 +35,10 @@ contrast, and alpha variants of the two for hairlines/shadows):
   shadow by 3px, widen the border to 2px and blend the background on pointer
   enter/exit. Text contrast is chosen from the actual background, so nothing is
   invisible in either theme.
+- **Global show/hide hotkey now works** — the configurable combo and the tray
+  "Show" action minimize/restore the window (`window::minimize` + `gain_focus`)
+  instead of being a no-op. `start_minimized` remains a documented gap (Iced 0.13
+  has no true start-hidden-in-tray primitive).
 - **Photo preview** — image entries show a lazy-loaded thumbnail directly in the
   history list, and the preview panel renders the full photo (300px, `Contain`)
   with its pixel dimensions. No GUI-thread file reads.

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.3] - 2026-11-13
 
+### Fixed (post-release audit)
+- **Global show/hide hotkey was a no-op**: `ShortcutAction::ShowHide`, tray
+  `TrayAction::Show`, and `Message::ShowWindow`/`HideWindow` did nothing. Now
+  `window::get_oldest()` -> `window::minimize(id, bool)` (and `gain_focus` on
+  show), with `AppState.window_hidden` tracking the state. Documented gap:
+  `start_minimized` remains stored-but-unenforced because Iced 0.13 has no true
+  "start hidden in tray" primitive.
+- Exhaustive-ultracode audit: verified release asset sha256 against GitHub,
+  no clipboard text in logs, CF_HTML/HGLOBAL/GDI ownership, WCAG AA contrast,
+  and corrected stale "35 tests" claims to 40.
+
 ### Changed (UI rework)
 - **Bigger, readable type**: raised the scale to display 28 / title 21 / body 16 /
   label 14 / caption 12 px (`src/gui/spacing.rs`). Roomier card/button/panel/
