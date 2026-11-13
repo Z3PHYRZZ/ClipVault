@@ -354,8 +354,8 @@ pub struct AppState {
 12. Return in your final message: files written, the exact contract signatures you implemented,
     any deviation from the contract and why, and any Windows limitation + proposed resolution.
 
-## Palette reference (v0.1.2, use `src/contracts.rs` constants, never raw hex elsewhere)
-PINK `#FFCAD4` (255,202,212) · MAUVE `#9D8189` (157,129,137) — the ONLY two
+## Palette reference (v0.1.3, use `src/contracts.rs` constants, never raw hex elsewhere)
+CREAM `#F2E9E4` (242,233,228) · INK `#22223B` (34,34,59) — the ONLY two
 chromatic colors. Neutral `WHITE`/`CHARCOAL` for text contrast; `alpha()` of the
-two brand colors for hairlines/shadows. Light bg PINK, panels/buttons/active MAUVE,
-text charcoal. Dark: MAUVE bg, PINK accents, PINK text — complementary, not inverted.
+two brand colors for hairlines/shadows. Light bg CREAM, panels/buttons/active INK,
+text INK. Dark: INK bg, CREAM accents, CREAM text — complementary, not inverted.

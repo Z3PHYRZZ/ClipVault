@@ -1,5 +1,5 @@
-//! Brand palette and light/dark Iced themes (v0.1.2 — two colors only).
-//! PINK #FFCAD4 and MAUVE #9D8189 are the ONLY chromatic colors. Neutral
+//! Brand palette and light/dark Iced themes (v0.1.3 — two colors only).
+//! CREAM #F2E9E4 and INK #22223B are the ONLY chromatic colors. Neutral
 //! white/charcoal are permitted for text contrast; hairlines/shadows are alpha
 //! variants of the two brand colors. No other hues anywhere.
 use crate::config::ThemeMode;
@@ -14,25 +14,25 @@ pub fn light_theme() -> Theme {
     Theme::custom(
         "ClipVault Light".to_string(),
         Palette {
-            background: PINK,
-            text: CHARCOAL,
-            primary: MAUVE,
-            success: PINK,
-            danger: MAUVE,
+            background: CREAM,
+            text: INK,
+            primary: INK,
+            success: CREAM,
+            danger: INK,
         },
     )
 }
 
-/// Complementary dark theme: MAUVE ground, PINK accents, PINK/white text.
+/// Complementary dark theme: INK ground, CREAM accents, CREAM text.
 pub fn dark_theme() -> Theme {
     Theme::custom(
         "ClipVault Dark".to_string(),
         Palette {
-            background: MAUVE,
-            text: PINK,
-            primary: PINK,
-            success: MAUVE,
-            danger: PINK,
+            background: INK,
+            text: CREAM,
+            primary: CREAM,
+            success: INK,
+            danger: CREAM,
         },
     )
 }
@@ -54,47 +54,47 @@ fn blend(a: Color, b: Color, t: f32) -> Color {
 }
 
 fn is_dark(theme: &Theme) -> bool {
-    theme.palette().background.r < 0.7
+    theme.palette().background.r < 0.5
 }
 
-fn soft_border(_theme: &Theme) -> Border {
+fn soft_border(theme: &Theme) -> Border {
     Border {
         radius: sp::r(sp::RADIUS_CARD),
         width: 1.0,
-        color: alpha(MAUVE, if is_dark(_theme) { 0.55 } else { 0.35 }),
+        color: alpha(INK, if is_dark(theme) { 0.55 } else { 0.22 }),
     }
 }
 
-/// PINK / MAUVE card with a soft border and subtle shadow.
+/// CREAM / INK card with a soft border and subtle shadow.
 pub fn card_style(theme: &Theme) -> container::Style {
     container::Style {
-        text_color: Some(if is_dark(theme) { PINK } else { CHARCOAL }),
-        background: Some(Background::Color(if is_dark(theme) { MAUVE } else { PINK })),
+        text_color: Some(if is_dark(theme) { CREAM } else { INK }),
+        background: Some(Background::Color(if is_dark(theme) { INK } else { CREAM })),
         border: soft_border(theme),
         shadow: Shadow {
-            color: alpha(MAUVE, 0.14),
+            color: alpha(INK, 0.14),
             offset: Vector::new(0.0, 3.0),
             blur_radius: 12.0,
         },
     }
 }
 
-/// MAUVE / PINK panel (secondary surface — the contrasting brand color).
+/// INK / CREAM panel (secondary surface — the contrasting brand color).
 pub fn panel_style(theme: &Theme) -> container::Style {
     container::Style {
-        text_color: Some(if is_dark(theme) { PINK } else { CHARCOAL }),
-        background: Some(Background::Color(if is_dark(theme) { PINK } else { MAUVE })),
+        text_color: Some(if is_dark(theme) { CREAM } else { INK }),
+        background: Some(Background::Color(if is_dark(theme) { CREAM } else { INK })),
         border: soft_border(theme),
         shadow: Shadow::default(),
     }
 }
 
 fn button_bg(_theme: &Theme, status: button::Status, primary: bool) -> Option<Background> {
-    let base = if primary { MAUVE } else { PINK };
+    let base = if primary { INK } else { CREAM };
     let c = match status {
-        button::Status::Hovered => blend(base, if primary { PINK } else { MAUVE }, 0.45),
+        button::Status::Hovered => blend(base, if primary { CREAM } else { INK }, 0.35),
         button::Status::Pressed => blend(base, CHARCOAL, 0.18),
-        button::Status::Disabled => alpha(MAUVE, 0.4),
+        button::Status::Disabled => alpha(INK, 0.4),
         _ => base,
     };
     Some(Background::Color(c))
@@ -103,7 +103,7 @@ fn button_bg(_theme: &Theme, status: button::Status, primary: bool) -> Option<Ba
 fn button_shadow(status: button::Status) -> Shadow {
     match status {
         button::Status::Hovered | button::Status::Pressed => Shadow {
-            color: alpha(MAUVE, 0.24),
+            color: alpha(INK, 0.24),
             offset: Vector::new(0.0, 2.0),
             blur_radius: 6.0,
         },
@@ -111,12 +111,14 @@ fn button_shadow(status: button::Status) -> Shadow {
     }
 }
 
-/// Contrast text on colored buttons: PINK on MAUVE surfaces, CHARCOAL on PINK.
+/// Contrast text on colored buttons: CREAM on INK, INK on CREAM.
 fn button_text(theme: &Theme, primary: bool) -> Color {
-    if is_dark(theme) || primary {
-        PINK
+    if is_dark(theme) {
+        INK
+    } else if primary {
+        CREAM
     } else {
-        CHARCOAL
+        INK
     }
 }
 
@@ -127,7 +129,7 @@ pub fn primary_button_style(theme: &Theme, status: button::Status) -> button::St
         border: Border {
             radius: sp::r(sp::RADIUS_BUTTON),
             width: 1.0,
-            color: alpha(MAUVE, 0.45),
+            color: alpha(INK, 0.45),
         },
         shadow: button_shadow(status),
     }
@@ -140,34 +142,34 @@ pub fn subtle_button_style(theme: &Theme, status: button::Status) -> button::Sty
         border: Border {
             radius: sp::r(sp::RADIUS_BUTTON),
             width: 1.0,
-            color: alpha(MAUVE, 0.30),
+            color: alpha(INK, 0.30),
         },
         shadow: button_shadow(status),
     }
 }
 
-/// Stateful toggle: MAUVE when active, PINK when inactive (color + border read,
+/// Stateful toggle: INK when active, CREAM when inactive (color + border read,
 /// no Unicode glyphs — Fira Sans has no star/dingbat glyphs).
 pub fn active_button_style(active: bool) -> impl Fn(&Theme, button::Status) -> button::Style {
     move |theme: &Theme, status: button::Status| {
-        let base = if active { MAUVE } else { PINK };
+        let base = if active { INK } else { CREAM };
         let c = match status {
-            button::Status::Hovered => blend(base, PINK, 0.45),
+            button::Status::Hovered => blend(base, CREAM, 0.35),
             button::Status::Pressed => blend(base, CHARCOAL, 0.18),
-            button::Status::Disabled => alpha(MAUVE, 0.4),
+            button::Status::Disabled => alpha(INK, 0.4),
             _ => base,
         };
         button::Style {
             background: Some(Background::Color(c)),
-            text_color: button_text(theme, false),
+            text_color: button_text(theme, active),
             border: Border {
                 radius: sp::r(sp::RADIUS_BUTTON),
                 width: if active { 2.0 } else { 1.0 },
-                color: if active { MAUVE } else { PINK },
+                color: if active { INK } else { CREAM },
             },
             shadow: if active {
                 Shadow {
-                    color: alpha(MAUVE, 0.22),
+                    color: alpha(INK, 0.22),
                     offset: Vector::new(0.0, 2.0),
                     blur_radius: 6.0,
                 }
@@ -181,17 +183,17 @@ pub fn active_button_style(active: bool) -> impl Fn(&Theme, button::Status) -> b
 /// Content-kind badge colors drawn from the two brand colors only.
 pub fn badge_style(kind: ContentKind, theme: &Theme) -> container::Style {
     let bg = match kind {
-        ContentKind::Text => MAUVE,
-        ContentKind::Image => PINK,
-        ContentKind::Files => MAUVE,
+        ContentKind::Text => INK,
+        ContentKind::Image => CREAM,
+        ContentKind::Files => INK,
     };
     container::Style {
-        text_color: Some(if is_dark(theme) { PINK } else { CHARCOAL }),
+        text_color: Some(if is_dark(theme) { CREAM } else { INK }),
         background: Some(Background::Color(bg)),
         border: Border {
             radius: sp::r(sp::RADIUS_BADGE),
             width: 1.0,
-            color: alpha(MAUVE, 0.30),
+            color: alpha(INK, 0.30),
         },
         shadow: Shadow::default(),
     }

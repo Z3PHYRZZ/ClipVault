@@ -83,7 +83,7 @@ Include `#[cfg(test)]` unit tests for round-trip with an empty list, one path, m
 
 ### `src/platform/icon.rs` (agent W1-3, NEW)
 ```rust
-/// 32x32 RGBA brand icon (PINK #FFCAD4 + MAUVE #9D8189 only).
+/// 32x32 RGBA brand icon (CREAM #F2E9E4 + INK #22223B only).
 pub fn rgba_icon() -> Vec<u8>;
 /// A valid .ico file (ICONDIR + ICONDIRENTRY + PNG payload) as bytes.
 pub fn ico_bytes() -> Vec<u8>;

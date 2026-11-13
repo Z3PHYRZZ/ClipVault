@@ -1,11 +1,11 @@
 //! Procedurally generated brand icon (no external asset dependency).
 //!
-//! The icon uses ONLY the two official v0.1.2 brand hexes (plus neutral alpha):
-//! PINK #FFCAD4 and MAUVE #9D8189.
+//! The icon uses ONLY the two official v0.1.3 brand hexes (plus neutral alpha):
+//! CREAM #F2E9E4 and INK #22223B.
 //! Generated at runtime so the tray icon and the .ico/embedded resource always
 //! share one design. Deterministic — no randomness.
 
-use crate::contracts::{MAUVE_RGB, PINK_RGB};
+use crate::contracts::{CREAM_RGB, INK_RGB};
 use crate::platform::PlatformError;
 
 const SIZE: usize = 32;
@@ -56,7 +56,7 @@ fn inside_rounded(
 pub fn rgba_icon() -> Vec<u8> {
     let mut buf = vec![0u8; SIZE * SIZE * 4];
 
-    // MAUVE rounded-square background with a PINK 1px outline.
+    // INK rounded-square background with a CREAM 1px outline.
     for y in 0..SIZE {
         for x in 0..SIZE {
             if inside_rounded(x, y, 1, 1, 31, 31, 6) {
@@ -65,35 +65,35 @@ pub fn rgba_icon() -> Vec<u8> {
                     &mut buf,
                     x,
                     y,
-                    if border { PINK_RGB } else { MAUVE_RGB },
+                    if border { CREAM_RGB } else { INK_RGB },
                     255,
                 );
             }
         }
     }
 
-    // PINK clipboard card with a MAUVE header strip + clip tab.
-    fill_rect(&mut buf, 8, 7, 24, 26, PINK_RGB, 255);
-    fill_rect(&mut buf, 8, 7, 24, 11, MAUVE_RGB, 255);
-    fill_rect(&mut buf, 13, 5, 19, 9, MAUVE_RGB, 255);
-    // MAUVE card outline (thin).
+    // CREAM clipboard card with an INK header strip + clip tab.
+    fill_rect(&mut buf, 8, 7, 24, 26, CREAM_RGB, 255);
+    fill_rect(&mut buf, 8, 7, 24, 11, INK_RGB, 255);
+    fill_rect(&mut buf, 13, 5, 19, 9, INK_RGB, 255);
+    // INK card outline (thin).
     for x in 8..24 {
-        px(&mut buf, x, 7, MAUVE_RGB, 120);
-        px(&mut buf, x, 25, MAUVE_RGB, 120);
+        px(&mut buf, x, 7, INK_RGB, 120);
+        px(&mut buf, x, 25, INK_RGB, 120);
     }
     for y in 7..26 {
-        px(&mut buf, 8, y, MAUVE_RGB, 120);
-        px(&mut buf, 23, y, MAUVE_RGB, 120);
+        px(&mut buf, 8, y, INK_RGB, 120);
+        px(&mut buf, 23, y, INK_RGB, 120);
     }
 
-    // MAUVE "V" (two diagonal strokes) — the ClipVault mark.
+    // INK "V" (two diagonal strokes) — the ClipVault mark.
     for t in 0..7 {
         let y = 13 + t;
         let left = 12 + t / 2;
         let right = 20 - t / 2;
         for dx in 0..2 {
-            px(&mut buf, left + dx, y, MAUVE_RGB, 255);
-            px(&mut buf, right - dx, y, MAUVE_RGB, 255);
+            px(&mut buf, left + dx, y, INK_RGB, 255);
+            px(&mut buf, right - dx, y, INK_RGB, 255);
         }
     }
     buf

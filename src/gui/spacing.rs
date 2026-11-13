@@ -4,7 +4,7 @@
 //!
 //! Scale: 4px base grid -> 4 / 8 / 12 / 16 / 24 / 32.
 //! Typography hierarchy: display 24, title 18, body 14, label 13, caption 11.
-//! Only the two brand hexes + neutrals are accents (see theme.rs).
+//! Only the two brand hexes (CREAM/INK) + neutrals are accents (see theme.rs).
 
 /// Base grid unit (pixels).
 pub const UNIT: u16 = 4;

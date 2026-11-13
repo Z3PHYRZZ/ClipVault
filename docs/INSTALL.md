@@ -8,8 +8,8 @@
 
 ## Install
 
-1. Download **`ClipVault-0.1.2-Setup.exe`** from the
-   [GitHub Release](https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.2).
+1. Download **`ClipVault-0.1.3-Setup.exe`** from the
+   [GitHub Release](https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3).
 2. Double-click it. If Windows SmartScreen warns about an unsigned app, click
    **More info > Run anyway** (the binary is built from source in this repo; it is
    not code-signed).
@@ -22,7 +22,7 @@
 ## Silent / scripted install
 
 ```
-ClipVault-0.1.2-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR=<path>
+ClipVault-0.1.3-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR=<path>
 ```
 
 Useful flags: `/LOG=<file>` for an install log, `/NOICONS` to skip shortcuts,

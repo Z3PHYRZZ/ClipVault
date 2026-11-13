@@ -206,18 +206,18 @@ Design tokens live in `src/gui/theme.rs` (palette/styles) and `src/gui/spacing.r
 `sp::*` constants on a 4px grid (4/8/12/16/24/32) rather than magic numbers, with
 a type hierarchy of 24/18/14/13/11 px. Rounded cards (14px), buttons (10px),
 badges (8px), soft 1px Mauve-alpha hairline borders, subtle shadows, and
-hover/press blends between PINK and MAUVE. Pin/favorite state reads through a
-MAUVE fill + 2px border (`active_button_style`) instead of glyphs —
+hover/press blends between CREAM and INK. Pin/favorite state reads through an
+INK fill + 2px border (`active_button_style`) instead of glyphs —
 Iced's bundled Fira Sans has no star/dingbat glyphs and renders them as tofu, so
 ALL user-visible UI strings are plain ASCII.
 
 | Role | Hex | RGB |
 |---|---|---|
-| Pastel Pink (light bg / cards / light text / selection) | `#FFCAD4` | 255,202,212 |
-| Muted Mauve (panels / buttons / active / borders / dark surfaces / text) | `#9D8189` | 157,129,137 |
+| Cream (light bg / cards / light text / selection) | `#F2E9E4` | 242,233,228 |
+| Ink (panels / buttons / active / borders / dark surfaces / text) | `#22223B` | 34,34,59 |
 
-Light: PINK background, MAUVE panels, PINK cards, MAUVE interactive, charcoal typography.
-Dark: MAUVE bg, PINK accents, PINK text — **not** a simple inversion.
+Light: CREAM background, INK panels, CREAM cards, INK interactive, INK typography.
+Dark: INK bg, CREAM accents, CREAM text — **not** a simple inversion.
 `iced::Theme::custom` with a `palette::Palette` derived
 from these hexes; all widget styling goes through `gui/theme.rs` so no stray color
 ever enters. Neutral white/charcoal/grayscale only for contrast. Rounded cards
