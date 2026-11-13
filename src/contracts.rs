@@ -1,48 +1,63 @@
 //! Shared constants. Integrator-owned. Fleet reads, never writes.
 //!
-//! Brand palette v0.1.1 — https://coolors.co/palette/22223b-4a4e69-9a8c98-c9ada7-f2e9e4
-//! Five official hexes, used for EVERY color in the app (UI, tray icon, docs).
-//! Light -> dark: CREAM f2e9e4, ROSE c9ada7, MAUVE 9a8c98, SLATE 4a4e69, INK 22223b.
-//! Neutral white/charcoal/grayscale are permitted only for readability.
+//! Brand palette v0.1.2 — two colors only:
+//!   PINK  `#FFCAD4` (light pastel pink)  — backgrounds, cards, light surfaces
+//!   MAUVE `#9D8189` (muted mauve)         — panels, accents, text, borders, dark surfaces
+//! Every chromatic color in the app resolves to one of these two. Neutral white
+//! and charcoal are permitted ONLY for readability (text on colored surfaces).
 use iced::Color;
 
-/// All brand colors are declared as `const` using the const `Color::from_rgb`.
-/// (`from_rgb8` is not const in iced 0.13; RGB tuples stay here as the source of truth.)
-pub const CREAM_RGB: (u8, u8, u8) = (0xF2, 0xE9, 0xE4);
-pub const ROSE_RGB: (u8, u8, u8) = (0xC9, 0xAD, 0xA7);
-pub const MAUVE_RGB: (u8, u8, u8) = (0x9A, 0x8C, 0x98);
-pub const SLATE_RGB: (u8, u8, u8) = (0x4A, 0x4E, 0x69);
-pub const INK_RGB: (u8, u8, u8) = (0x22, 0x22, 0x3B);
+pub const PINK_RGB: (u8, u8, u8) = (0xFF, 0xCA, 0xD4);
+pub const MAUVE_RGB: (u8, u8, u8) = (0x9D, 0x81, 0x89);
 
 const fn rgb8(r: u8, g: u8, b: u8) -> Color {
     Color::from_rgb(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0)
 }
 
-// The five official brand colors.
-pub const CREAM: Color = rgb8(0xF2, 0xE9, 0xE4);
-pub const ROSE: Color = rgb8(0xC9, 0xAD, 0xA7);
-pub const MAUVE: Color = rgb8(0x9A, 0x8C, 0x98);
-pub const SLATE: Color = rgb8(0x4A, 0x4E, 0x69);
-pub const INK: Color = rgb8(0x22, 0x22, 0x3B);
+/// The two official brand colors.
+pub const PINK: Color = rgb8(0xFF, 0xCA, 0xD4);
+pub const MAUVE: Color = rgb8(0x9D, 0x81, 0x89);
 
-// Derived surfaces: only blends/alpha of the five brand colors (no unrelated hues).
-pub const CARD: Color = CREAM; // warm cream card
-pub const DARK_BG: Color = INK; // deep navy-ink background
-pub const DARK_SURFACE: Color = SLATE; // dark slate panel
+/// Neutral contrast colors (white / charcoal) — readability only, never accents.
+pub const WHITE: Color = Color::WHITE;
+pub const CHARCOAL: Color = rgb8(0x33, 0x2B, 0x2E);
+
+/// Alpha variant of a brand color (hairlines / shadows — no new hues).
+pub fn alpha(c: Color, a: f32) -> Color {
+    Color {
+        r: c.r,
+        g: c.g,
+        b: c.b,
+        a,
+    }
+}
+
+// ---- Derived surface tokens (all resolve to the two brand colors) ----------
+pub const CARD: Color = PINK; // light card
+pub const DARK_BG: Color = MAUVE; // mauve-tinted dark background
+pub const DARK_SURFACE: Color = MAUVE; // dark mauve panel
 pub const DARK_SURFACE_2: Color = MAUVE; // mauve hairline on dark surfaces
-pub const DARK_TEXT: Color = CREAM; // light text on dark
-pub const DARK_TEXT_STRONG: Color = CREAM; // strong light text
+pub const DARK_TEXT: Color = PINK; // light pink text on mauve
+pub const DARK_TEXT_STRONG: Color = PINK; // strong light pink text
 
 // ---- Backward-compatible role aliases -------------------------------------
-// Theme/icon code still refers to SAGE/PEACH/PINK/ROSE/MAUVE RGB tuples by name.
-// They now resolve to the new five-color palette so every surface uses it.
-pub const SAGE_RGB: (u8, u8, u8) = CREAM_RGB; // light background
-pub const PEACH_RGB: (u8, u8, u8) = ROSE_RGB; // secondary panel
-pub const PINK_RGB: (u8, u8, u8) = MAUVE_RGB; // selection / primary accent
+// theme.rs / icon.rs keep their role names; they now resolve to the 2-color set.
+pub const CHARCOAL_RGB: (u8, u8, u8) = (0x33, 0x2B, 0x2E);
 
-pub const SAGE: Color = CREAM;
-pub const PEACH: Color = ROSE;
-pub const PINK: Color = MAUVE;
+pub const CREAM_RGB: (u8, u8, u8) = PINK_RGB;
+pub const ROSE_RGB: (u8, u8, u8) = MAUVE_RGB;
+pub const SLATE_RGB: (u8, u8, u8) = MAUVE_RGB;
+pub const INK_RGB: (u8, u8, u8) = CHARCOAL_RGB;
+
+pub const CREAM: Color = PINK;
+pub const ROSE: Color = MAUVE;
+pub const SLATE: Color = MAUVE;
+pub const INK: Color = CHARCOAL;
+
+pub const SAGE_RGB: (u8, u8, u8) = PINK_RGB;
+pub const PEACH_RGB: (u8, u8, u8) = PINK_RGB;
+pub const SAGE: Color = PINK;
+pub const PEACH: Color = PINK;
 
 pub const APP_ID: &str = "clipvault";
 pub const DB_FILE: &str = "clipvault.db";

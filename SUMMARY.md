@@ -10,9 +10,9 @@ workflow wants ~40 subagents orchestrated, compiling/testing after each phase.
 - Rust installed at `C:\Users\Dodot\.cargo\bin` (bootstrapped this session via winget `Rustlang.Rustup`)
 - MSVC: VS 18 Community — `C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat`, cl/link at `...\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\`
 - Windows SDK: `10.0.26100.0`
-- Brand palette (v0.1.1): `#F2E9E4` Cream, `#C9ADA7` Rose, `#9A8C98` Mauve,
-  `#4A4E69` Slate, `#22223B` Ink (coolors.co/22223b-4a4e69-9a8c98-c9ada7-f2e9e4).
-  v0.1.0 used the earlier pastel-rose set.
+- Brand palette (v0.1.2, two colors only): `#FFCAD4` Pastel Pink,
+  `#9D8189` Muted Mauve. Neutral white/charcoal for text contrast only.
+  History: v0.1.1 used a 5-color coolors set; v0.1.0 the original pastel-rose set.
 
 **What's done — DEFINITION OF DONE essentially met:**
 - Environment: no Rust existed → bootstrapped `Rustlang.Rustup` via winget.
@@ -73,7 +73,7 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 **No-console fix (2026-11-13):** Added `#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]` to `src/main.rs`. The release PE is now `SUBSYSTEM=2` (WINDOWS/GUI) instead of `3` (CONSOLE), so no conhost/cmd window spawns. Verified: launched detached with zero child processes, no console. Since a GUI-subsystem process has no stderr, switched `tracing` from the console writer to a file writer (`%LOCALAPPDATA%\ClipVault\clipvault.log` via `Arc<File>` MakeWriter, `.with_ansi(false)`) — diagnostics still work (verified log line written). Rebuilt release exe + installer; installed exe subsystem 2; install/run/uninstall 0/124/0.
 
 **INSTALLER (added 2026-11-13):**
-- `installer\Output\ClipVault-0.1.1-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
+- `installer\Output\ClipVault-0.1.2-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
 - `installer\ClipVault.iss` — per-user (no admin), x64, Win10+, brand wizard icon,
   Start Menu + optional desktop shortcuts, optional HKCU Run startup (unchecked),
   optional post-install launch (unchecked), clean uninstall that PRESERVES
@@ -87,22 +87,22 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 **PUBLISHED TO GITHUB (2026-11-13):**
 - Repo: **https://github.com/Z3PHYRZZ/ClipVault** (public, default `main`).
 - Local working dir `C:\Users\Dodot\Documents\GitHub\ClipVault` (was `D:\job done\ClipVault`).
-- Worktree clean, local == remote. Releases: **v0.1.0** (first release) and **v0.1.1**
-  (palette refresh) — both live with installer + portable exe assets.
-- **v0.1.1 Release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.1
-  assets `ClipVault-0.1.1-Setup.exe` (6,390,711 B) + `clipvault.exe` (14,025,216 B).
+- Releases: **v0.1.0** (first), **v0.1.1** (5-color coolors), **v0.1.2**
+  (two-color) — all live with installer + portable exe assets.
+- **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.2
 - Docs: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`, `docs/INSTALL.md`,
   `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README badges + docs links.
   `.gitignore` excludes `target/` and `installer/Output/`.
 - All gates re-verified: check 0/0, fmt OK, clippy -D warnings 0, 35 tests pass,
-  release exe `0.1.1.0` (PE subsystem 2), install/run/uninstall 0/124/0.
+  release exe `0.1.2.0` (PE subsystem 2), install/run/uninstall 0/124/0.
 
-**v0.1.1 palette refresh (2026-11-13):** Replaced every color with the coolors
-five-color set — Cream `#F2E9E4`, Rose `#C9ADA7`, Mauve `#9A8C98`, Slate `#4A4E69`,
-Ink `#22223B`. `contracts.rs` exports `CREAM/ROSE/MAUVE/SLATE/INK` (+ RGB tuples
-+ backward aliases); `theme.rs` fully token-driven with brand-alpha hairlines/
-shadows; icon redrawn with all five. Exactly 5 hex definitions in source, no
-unrelated accents. Version bumped everywhere; CHANGELOG has the [0.1.1] entry.
+**v0.1.2 palette (2026-11-13):** Two colors only — Pastel Pink `#FFCAD4` and
+Muted Mauve `#9D8189`. `contracts.rs` exports `PINK`/`MAUVE` (+ RGB tuples,
+`WHITE`/`CHARCOAL` neutrals, `alpha()` helper, backward aliases); `theme.rs` fully
+token-driven with brand-alpha hairlines/shadows and per-surface contrast text;
+icon redrawn with only the two brand colors. Exactly 2 chromatic hex definitions
+in source, no unrelated accents. Version bumped everywhere; CHANGELOG has the
+[0.1.2] entry ([0.1.1] and [0.1.0] history preserved).
 
 **Next steps:**
 1. DONE — correctness review findings acted on (see below).

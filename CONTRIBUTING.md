@@ -26,10 +26,10 @@ Git Bash users: `export PATH="/c/Users/Dodot/.cargo/bin:$PATH"` if rustup is not
   `src/platform/` with headless stubs so `cargo test` runs without a desktop.
 - UI strings must be **plain ASCII** — Iced's bundled Fira Sans has no
   star/dingbat/arrow glyphs and renders them as tofu boxes.
-- Colors: only the five brand hexes (`#F2E9E4`, `#C9ADA7`, `#9A8C98`, `#4A4E69`,
-  `#22223B`) plus neutral white/charcoal/grayscale for contrast. Alpha variants
-  of brand colors for hairlines/shadows. Spacing, radii, and type sizes come from
-  `src/gui/spacing.rs` — never magic numbers.
+- Colors: only the two brand hexes (`#FFCAD4`, `#9D8189`) plus neutral
+  white/charcoal for text contrast. Alpha variants of the two for hairlines/
+  shadows. Spacing, radii, and type sizes come from `src/gui/spacing.rs` —
+  never magic numbers.
 - Comment only the non-obvious (especially Win32 ownership / threading details).
 
 ## Project layout

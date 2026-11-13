@@ -58,7 +58,7 @@ a hint in the status bar asking you to rebind.
 
 ## System tray
 
-The five-color brand tray icon keeps ClipVault running in the background.
+The two-color brand tray icon keeps ClipVault running in the background.
 
 - **Double-click** the icon — show the window.
 - **Right-click** (or single click) — menu: **Show ClipVault**, **Settings**,

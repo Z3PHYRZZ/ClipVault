@@ -199,29 +199,26 @@ These are documented because they dictate the design and must not be silently sk
 - **No unwrap/expect** in runtime paths: all DB calls return `Result<T, DbError>`;
   the worker maps errors to `WorkerEvent::Error` which the GUI shows as a toast.
 
-## 5. Theme & palette (exact five brand colors)
+## 5. Theme & palette (exact two brand colors)
 
 Design tokens live in `src/gui/theme.rs` (palette/styles) and `src/gui/spacing.rs`
 (spacing, radii, type scale — the single source of truth). Every view uses
 `sp::*` constants on a 4px grid (4/8/12/16/24/32) rather than magic numbers, with
 a type hierarchy of 24/18/14/13/11 px. Rounded cards (14px), buttons (10px),
-badges (8px), soft 1px Mauve-alpha hairline borders, subtle 0.08-alpha shadows,
-and hover/press color blends toward PINK/PEACH/MAUVE. Pin/favorite state reads
-through ROSE fill + 2px border (`active_button_style`) instead of glyphs —
+badges (8px), soft 1px Mauve-alpha hairline borders, subtle shadows, and
+hover/press blends between PINK and MAUVE. Pin/favorite state reads through a
+MAUVE fill + 2px border (`active_button_style`) instead of glyphs —
 Iced's bundled Fira Sans has no star/dingbat glyphs and renders them as tofu, so
 ALL user-visible UI strings are plain ASCII.
 
 | Role | Hex | RGB |
 |---|---|---|
-| Cream (light bg / cards / light text) | `#F2E9E4` | 242,233,228 |
-| Rose (panels / buttons / active / selection) | `#C9ADA7` | 201,173,167 |
-| Mauve (secondary text / icons / borders) | `#9A8C98` | 154,140,152 |
-| Slate (dark surfaces / header accents) | `#4A4E69` | 74,78,105 |
-| Ink (dark bg / primary text / outlines) | `#22223B` | 34,34,59 |
+| Pastel Pink (light bg / cards / light text / selection) | `#FFCAD4` | 255,202,212 |
+| Muted Mauve (panels / buttons / active / borders / dark surfaces / text) | `#9D8189` | 157,129,137 |
 
-Light: Cream background, Rose panels, Cream cards, Rose interactive, Ink typography.
-Dark: Ink bg, Slate surfaces, Cream/Rose accents, Cream text — **not** a simple
-inversion. `iced::Theme::custom` with a `palette::Palette` derived
+Light: PINK background, MAUVE panels, PINK cards, MAUVE interactive, charcoal typography.
+Dark: MAUVE bg, PINK accents, PINK text — **not** a simple inversion.
+`iced::Theme::custom` with a `palette::Palette` derived
 from these hexes; all widget styling goes through `gui/theme.rs` so no stray color
 ever enters. Neutral white/charcoal/grayscale only for contrast. Rounded cards
 (radius 12), 1px soft borders (Mauve at low alpha), subtle shadow via layered

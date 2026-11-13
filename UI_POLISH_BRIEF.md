@@ -47,7 +47,7 @@ concurrently by Wave A — do NOT edit them, just call their public functions.
   scrollable container padding `sp::LIST_PAD` (8). Row card padding `sp::ROW_PAD`
   ([12,16]), row children `.spacing(sp::GAP_TIGHT)`, text sizes `sp::TEXT_BODY` /
   `sp::TEXT_CAPTION`. Replace the raw `Space::with_width(10)` with `sp::GAP_TIGHT`.
-  Selected card: use PINK background but add a 2px ROSE border for a clearer
+  Selected card: use PINK background but add a 2px MAUVE border for a clearer
   selected state (via `Border` on the `container::Style`). Keep `mouse_area`
   selection and all 4 buttons (`state_button` for Pin/Fav, `quiet_button` for
   Copy/Delete) with their exact `Message` variants unchanged. Wrap the text column
@@ -79,10 +79,9 @@ concurrently by Wave A — do NOT edit them, just call their public functions.
   sizes `sp::TEXT_CAPTION`. Sidebar container keeps `theme::panel_style`.
   Keep both modal `stack!` overlays. Keep frozen `view(state) -> Element<'_, Message>`.
 
-## Palette reminder (exact, v0.1.1)
-CREAM #F2E9E4 · ROSE #C9ADA7 · MAUVE #9A8C98 · SLATE #4A4E69 · INK #22223B.
-Light: CREAM bg, ROSE panels, CREAM cards, ROSE interactive, INK type.
-Dark: INK bg, SLATE surfaces, CREAM/ROSE accents, CREAM text.
+## Palette reminder (exact, v0.1.2)
+PINK #FFCAD4 · MAUVE #9D8189 — the only two chromatic colors.
+Light: PINK bg, MAUVE panels, charcoal text. Dark: MAUVE bg, PINK accents, PINK text.
 
 Return in your final message: files written, token changes applied, signatures
 kept, any deviation, any Iced API uncertainty you worked around.
