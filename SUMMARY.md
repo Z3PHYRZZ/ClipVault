@@ -82,6 +82,19 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
   and removes dir/shortcuts/key while leaving clipvault.db + WAL intact.
 - `LICENSE` (MIT) added; `README.md` + `PACKAGING.md` updated with install steps.
 
+**PUBLISHED TO GITHUB (2026-11-13):**
+- Repo: **https://github.com/Z3PHYRZZ/ClipVault** (public, default `main`).
+- Local working dir moved to `C:\Users\Dodot\Documents\GitHub\ClipVault` (was `D:\job done\ClipVault`).
+- 96 files pushed; 3 commits (`Initial commit`, `feat: ClipVault v0.1.0`,
+  `docs: add v0.1.0 release notes`). Worktree clean, local == remote.
+- **Release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.0
+  assets `ClipVault-0.1.0-Setup.exe` (6,388,860 B) + `clipvault.exe` (14,022,656 B).
+- Docs added for GitHub: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`,
+  `docs/INSTALL.md`, `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README got
+  badges + docs links. `.gitignore` excludes `target/` and `installer/Output/`.
+- All gates re-verified FROM THE NEW LOCATION: check 0/0, fmt OK, clippy -D warnings
+  0, 35 tests pass, release build + installer rebuilt there (PE subsystem 2).
+
 **Next steps:**
 1. DONE — correctness review findings acted on (see below).
 2. DONE — `cargo test --release` confirmed (35 pass); re-ran clippy after fixes.
