@@ -90,6 +90,7 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 - Releases: **v0.1.0** (first), **v0.1.1** (5-color coolors), **v0.1.2**
   (pink/mauve), **v0.1.3** (cream/ink) — all live with installer + portable exe.
 - **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3
+  assets `ClipVault-0.1.3-Setup.exe` (6,389,550 B) + `clipvault.exe` (14,024,192 B).
 - Docs: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`, `docs/INSTALL.md`,
   `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README badges + docs links.
   `.gitignore` excludes `target/` and `installer/Output/`.
