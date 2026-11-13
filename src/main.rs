@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // ClipVault — Windows clipboard manager. Entry point / integrator wiring.
 // GUI subsystem: do NOT allocate a console window when launched (double-click,
 // Start Menu, or startup). Without this, Windows spawns a cmd/conhost window

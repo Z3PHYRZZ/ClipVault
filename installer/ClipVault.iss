@@ -1,3 +1,4 @@
+; SPDX-License-Identifier: MIT
 ; ClipVault — Inno Setup 6 installer script
 ; Build with:
 ;   "C:\Users\Dodot\AppData\Local\Programs\Inno Setup 6\ISCC.exe" installer\ClipVault.iss

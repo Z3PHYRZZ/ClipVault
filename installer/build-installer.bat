@@ -1,4 +1,5 @@
 @echo off
+REM SPDX-License-Identifier: MIT
 REM Build the ClipVault Windows installer (Inno Setup 6).
 REM Run from anywhere; resolves paths relative to this script.
 setlocal

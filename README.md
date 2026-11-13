@@ -116,4 +116,15 @@ See `ARCHITECTURE.md` (design + Windows API limitations), `ROADMAP.md` (11 phase
 
 ## License
 
-MIT. Author: Manuel.
+**MIT** — see [LICENSE](LICENSE).
+
+`SPDX-License-Identifier: MIT` · Copyright (c) 2026 Manuel.
+
+Permission is granted to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, provided the copyright notice
+and this permission notice are included in all copies or substantial portions.
+The Software is provided "AS IS", without warranty of any kind. See the full
+text in [LICENSE](LICENSE) for the complete terms.
+
+Third-party dependencies are used under their own licenses (see `Cargo.lock`
+and each crate's repository). ClipVault itself adds no additional restrictions.
