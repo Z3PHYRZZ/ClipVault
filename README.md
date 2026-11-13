@@ -33,7 +33,10 @@ grab `ClipVault-0.1.3-Setup.exe` and double-click it. Full docs in [`docs/`](doc
 - **Global shortcuts** — configurable show/hide combo plus `Ctrl+Shift+1..9` quick-paste.
 - **Persistence** — versioned SQLite schema (migrations v1→v3), WAL, transactions,
   configurable retention pruning, image assets in an app-managed directory.
-- **Preview** — text, image (PNG normalized from DIB), and file metadata (size, exists).
+- **Preview** — text, photo (thumbnail in the history list + full 300px preview
+  with dimensions), and file metadata (size, exists).
+- **Copy provenance** — records the source app (`chrome.exe`, etc.) and the web
+  page URL (browser `CF_HTML` `SourceURL:`, or a bare link), shown per entry.
 - **System tray** — Shell_NotifyIconW with a context menu, hide-to-tray, pause monitoring.
 - **Startup** — optional HKCU Run registration, named-mutex single instance,
   start minimized, graceful shutdown with WAL checkpoint.

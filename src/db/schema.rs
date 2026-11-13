@@ -2,7 +2,7 @@
 use crate::db::DbError;
 use rusqlite::Connection;
 
-pub const LATEST_VERSION: u32 = 3;
+pub const LATEST_VERSION: u32 = 4;
 
 /// Each migration is applied inside its own transaction and bumps user_version.
 const MIGRATIONS: &[&str] = &[
@@ -50,6 +50,12 @@ const MIGRATIONS: &[&str] = &[
     END;",
     // v3 — retained config + source index (schema evolution example).
     "CREATE INDEX IF NOT EXISTS ix_entries_last_used ON entries(last_used_at DESC);",
+    // v4 — provenance: web source URL alongside the existing source_app column.
+    // Uses ADD COLUMN (idempotent-safe for a fresh v4 DB) and an index for
+    // "copied from where" lookups. NULL = not from a web page / unknown.
+    "ALTER TABLE entries ADD COLUMN source_url TEXT;
+    CREATE INDEX IF NOT EXISTS ix_entries_source_url ON entries(source_url)
+        WHERE source_url IS NOT NULL;",
 ];
 
 /// Run all pending migrations, returning the resulting user_version.

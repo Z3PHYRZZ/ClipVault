@@ -1,13 +1,15 @@
 //! The single message enum. Frozen — all GUI/worker events flow through here.
 use crate::config::ThemeMode;
 use crate::domain::{ContentKind, DateRange, ShortcutAction};
-use crate::workers::WorkerEvent;
 
+// The single GUI message enum intentionally mixes tiny events with boxed worker
+// events; boxing the worker variant already keeps the common path small.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub enum Message {
     Noop,
     /// Worker -> GUI (clipboard/db/hotkey/tray/error).
-    Worker(WorkerEvent),
+    Worker(Box<crate::workers::WorkerEvent>),
     /// Search & filters.
     SearchChanged(String),
     FilterKind(Option<ContentKind>),

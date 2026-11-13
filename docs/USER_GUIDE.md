@@ -28,8 +28,9 @@ with one keystroke. Nothing leaves your machine.
   and date (All time / Today / Last 7 days / Last 30 days). **Clear** resets all.
 - **History cards** — one per entry, newest first (pinned and favorites float to
   the top). Each shows a type badge, a short preview, and a use count.
-- **Preview** — click a card to see the full text, the image, or the file list with
-  sizes. Missing files are marked `(missing)`.
+- **Preview** — click a card to see the full text, the photo (with dimensions), or
+  the file list with sizes. Images also show a thumbnail right in the history list.
+  A **SOURCE** section shows which app copied it and the web page URL when known.
 - **Status bar** — last action/result, total entry count, clear-all, and paging.
 
 ## Entry actions
@@ -84,10 +85,23 @@ is never uploaded, and there is no telemetry or update checker.
 - **Text** — stored directly in SQLite as UTF-8. Unicode is fully supported.
 - **Images** — the clipboard's device-independent bitmap (DIB) is normalized to a
   PNG stored in the asset directory; the database keeps only its path, hash, and
-  dimensions. Previews load that PNG.
+  dimensions. The history list shows a thumbnail and the preview renders the full
+  photo with its pixel dimensions.
 - **Files** — only paths and metadata (size, directory flag, modified time,
   existence) are stored. ClipVault never copies file contents into the database.
   If a file is later moved, the preview shows `(missing)` rather than failing.
+
+## Copy source (provenance)
+
+ClipVault records, on a best-effort basis, where each copy came from:
+- **Source app** — the process that owned the clipboard (`chrome.exe`, `notepad.exe`,
+  ...), resolved from the clipboard owner window. Only the executable name is stored.
+- **Source URL** — browsers publish a `CF_HTML` header with `SourceURL:<page>`;
+  ClipVault parses it. Otherwise a bare `http(s)://` link in the copied text is used.
+Both appear in the history subtitle and the preview's SOURCE section. They are
+optional — not every app publishes a URL, and the owner window can close before
+the read, so entries without them are normal. Everything is local; no lookup is
+performed against the network.
 
 ## Privacy notes
 

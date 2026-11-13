@@ -1,7 +1,7 @@
 //! Entry CRUD, duplicate-safe insert, and retention pruning.
 use crate::db::{DbError, image_assets};
 use crate::domain::{ClipEntry, ContentKind, FileMetadata};
-use crate::workers::ClipPayload;
+use crate::workers::{ClipCapture, ClipPayload};
 use rusqlite::{Connection, OptionalExtension, params};
 
 fn now_unix() -> i64 {
@@ -26,29 +26,37 @@ fn row_to_entry(r: &rusqlite::Row<'_>) -> rusqlite::Result<ClipEntry> {
         pinned: r.get::<_, i64>("pinned")? != 0,
         favorite: r.get::<_, i64>("favorite")? != 0,
         source_app: r.get("source_app")?,
+        source_url: r.get("source_url")?,
         byte_size: r.get("byte_size")?,
     })
 }
 
 const SELECT_COLS: &str = "id, kind, content_hash, text_content, image_path, image_w, image_h, \
      file_paths_json, file_meta_json, created_at, last_used_at, use_count, pinned, favorite, \
-     source_app, byte_size";
+     source_app, source_url, byte_size";
 
-/// Insert a captured payload, or bump usage counters if it is a duplicate.
+/// Insert a captured payload (+ provenance), or bump usage counters on a duplicate.
 /// A UNIQUE(kind, content_hash) index + ON CONFLICT makes this race-safe.
-pub fn insert_dedup(conn: &Connection, p: &ClipPayload) -> Result<i64, DbError> {
+/// Provenance is only written when present, so a re-copy with an unknown source
+/// does not erase an earlier known source.
+pub fn insert_dedup(conn: &Connection, cap: &ClipCapture) -> Result<i64, DbError> {
     let now = now_unix();
-    match p {
+    let app = cap.source_app.as_deref();
+    let url = cap.source_url.as_deref();
+    match &cap.payload {
         ClipPayload::Text(s) => {
             let hash = crate::domain::hash_text(s);
             let size = s.len() as i64;
             let tx = conn.unchecked_transaction()?;
             tx.execute(
                 "INSERT INTO entries (kind, content_hash, text_content, created_at, last_used_at, \
-                 use_count, byte_size) VALUES ('text', ?1, ?2, ?3, ?3, 1, ?4) \
+                 use_count, byte_size, source_app, source_url) \
+                 VALUES ('text', ?1, ?2, ?3, ?3, 1, ?4, ?5, ?6) \
                  ON CONFLICT(kind, content_hash) DO UPDATE SET \
-                 use_count = use_count + 1, last_used_at = excluded.last_used_at",
-                params![hash, s, now, size],
+                 use_count = use_count + 1, last_used_at = excluded.last_used_at, \
+                 source_app = COALESCE(excluded.source_app, entries.source_app), \
+                 source_url = COALESCE(excluded.source_url, entries.source_url)",
+                params![hash, s, now, size, app, url],
             )?;
             let id: i64 = tx.query_row(
                 "SELECT id FROM entries WHERE kind='text' AND content_hash=?1",
@@ -66,10 +74,13 @@ pub fn insert_dedup(conn: &Connection, p: &ClipPayload) -> Result<i64, DbError> 
             let tx = conn.unchecked_transaction()?;
             tx.execute(
                 "INSERT INTO entries (kind, content_hash, image_path, image_w, image_h, created_at, \
-                 last_used_at, use_count, byte_size) VALUES ('image', ?1, ?2, ?3, ?4, ?5, ?5, 1, ?6) \
+                 last_used_at, use_count, byte_size, source_app, source_url) \
+                 VALUES ('image', ?1, ?2, ?3, ?4, ?5, ?5, 1, ?6, ?7, ?8) \
                  ON CONFLICT(kind, content_hash) DO UPDATE SET \
-                 use_count = use_count + 1, last_used_at = excluded.last_used_at",
-                params![hash, rel, w, h, now, size],
+                 use_count = use_count + 1, last_used_at = excluded.last_used_at, \
+                 source_app = COALESCE(excluded.source_app, entries.source_app), \
+                 source_url = COALESCE(excluded.source_url, entries.source_url)",
+                params![hash, rel, w, h, now, size, app, url],
             )?;
             let id: i64 = tx.query_row(
                 "SELECT id FROM entries WHERE kind='image' AND content_hash=?1",
@@ -88,12 +99,14 @@ pub fn insert_dedup(conn: &Connection, p: &ClipPayload) -> Result<i64, DbError> 
             let tx = conn.unchecked_transaction()?;
             tx.execute(
                 "INSERT INTO entries (kind, content_hash, file_paths_json, file_meta_json, \
-                 created_at, last_used_at, use_count, byte_size) \
-                 VALUES ('files', ?1, ?2, ?3, ?4, ?4, 1, ?5) \
+                 created_at, last_used_at, use_count, byte_size, source_app, source_url) \
+                 VALUES ('files', ?1, ?2, ?3, ?4, ?4, 1, ?5, ?6, ?7) \
                  ON CONFLICT(kind, content_hash) DO UPDATE SET \
                  use_count = use_count + 1, last_used_at = excluded.last_used_at, \
-                 file_meta_json = excluded.file_meta_json",
-                params![hash, paths_json, meta_json, now, size],
+                 file_meta_json = excluded.file_meta_json, \
+                 source_app = COALESCE(excluded.source_app, entries.source_app), \
+                 source_url = COALESCE(excluded.source_url, entries.source_url)",
+                params![hash, paths_json, meta_json, now, size, app, url],
             )?;
             let id: i64 = tx.query_row(
                 "SELECT id FROM entries WHERE kind='files' AND content_hash=?1",

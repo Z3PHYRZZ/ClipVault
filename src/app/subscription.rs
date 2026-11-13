@@ -12,7 +12,7 @@ pub fn subscription(state: &AppState) -> Subscription<Message> {
         "clipvault-workers",
         iced::stream::channel(256, move |mut output| async move {
             while let Ok(ev) = rx.recv_async().await {
-                if output.send(Message::Worker(ev)).await.is_err() {
+                if output.send(Message::Worker(Box::new(ev))).await.is_err() {
                     break;
                 }
             }

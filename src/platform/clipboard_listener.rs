@@ -50,7 +50,7 @@ pub fn start(
                 if msg.message == WM_CLIPBOARDUPDATE && !pause.load(Ordering::SeqCst) {
                     match clip.read() {
                         Ok(Some(payload)) => {
-                            if tx.send(WorkerEvent::NewClipboard(payload)).is_err() {
+                            if tx.send(WorkerEvent::NewClipboard(Box::new(payload))).is_err() {
                                 break;
                             }
                         }

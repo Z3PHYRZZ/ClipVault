@@ -65,6 +65,7 @@ pub struct ClipEntry {
     pub pinned: bool,
     pub favorite: bool,
     pub source_app: Option<String>,
+    pub source_url: Option<String>,
     pub byte_size: i64,
 }
 

@@ -14,7 +14,7 @@
 #[cfg(windows)]
 mod imp {
     use crate::platform::{ClipboardAccess, PlatformError, winutil::win32::ClipboardGuard};
-    use crate::workers::ClipPayload;
+    use crate::workers::{ClipCapture, ClipPayload};
     use windows::Win32::Foundation::{GlobalFree, HANDLE, HGLOBAL};
     use windows::Win32::System::DataExchange::{
         EmptyClipboard, GetClipboardData, SetClipboardData,
@@ -29,7 +29,7 @@ mod imp {
     pub struct WinClipboard;
 
     impl ClipboardAccess for WinClipboard {
-        fn read(&self) -> Result<Option<ClipPayload>, PlatformError> {
+        fn read(&self) -> Result<Option<ClipCapture>, PlatformError> {
             let _guard = ClipboardGuard::open(5, 15)?;
             unsafe {
                 let handle: HANDLE = GetClipboardData(CF_UNICODETEXT)
@@ -55,7 +55,7 @@ mod imp {
                 if text.is_empty() {
                     return Ok(None);
                 }
-                Ok(Some(ClipPayload::Text(text)))
+                Ok(Some(ClipCapture::new(ClipPayload::Text(text))))
             }
         }
 
@@ -109,10 +109,10 @@ mod imp {
 #[cfg(not(windows))]
 mod imp {
     use crate::platform::{ClipboardAccess, PlatformError};
-    use crate::workers::ClipPayload;
+    use crate::workers::{ClipCapture, ClipPayload};
     pub struct StubClipboard;
     impl ClipboardAccess for StubClipboard {
-        fn read(&self) -> Result<Option<ClipPayload>, PlatformError> {
+        fn read(&self) -> Result<Option<ClipCapture>, PlatformError> {
             Ok(None)
         }
         fn write_text(&self, _s: &str) -> Result<(), PlatformError> {

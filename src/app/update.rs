@@ -62,7 +62,7 @@ fn restore(state: &AppState, id: i64) -> Task<Message> {
         },
         |r: Result<(), platform::PlatformError>| match r {
             Ok(_) => Message::Noop,
-            Err(e) => Message::Worker(WorkerEvent::Error(format!("restore: {e}"))),
+            Err(e) => Message::Worker(Box::new(WorkerEvent::Error(format!("restore: {e}")))),
         },
     )
 }
@@ -72,7 +72,7 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
         Message::Noop | Message::ShowWindow | Message::HideWindow => Task::none(),
 
         // ---- worker results ----
-        Message::Worker(ev) => match ev {
+        Message::Worker(ev) => match *ev {
             WorkerEvent::NewClipboard(payload) => {
                 let _ = state.db_tx.send(DbCommand::Insert(payload));
                 // Refresh is triggered by the DbResult::Done("insert") below.

@@ -1,5 +1,16 @@
 # ClipVault — Frozen Interface Contract (v1)
 
+> **v0.1.3 amendments (source provenance + photo preview):** the signatures below
+> are the original fleet contract; three evolved. Real current API:
+> - `ClipEntry` gained `source_url: Option<String>` (schema v4).
+> - `ClipPayload` is wrapped by `workers::ClipCapture { payload, source_app, source_url }`.
+> - `WorkerEvent::NewClipboard(Box<ClipCapture>)`, `DbCommand::Insert(Box<ClipCapture>)`,
+>   `Message::Worker(Box<WorkerEvent>)` (boxed to keep message enums small).
+> - `ClipboardAccess::read() -> Result<Option<ClipCapture>, PlatformError>`
+>   (captures provenance while the clipboard is open).
+> - `insert_dedup(conn, &ClipCapture)`.
+> See `src/workers/bus.rs`, `src/platform/source.rs`, `CHANGELOG.md` [0.1.3].
+
 > **Every agent MUST read this before writing code.** These signatures are frozen.
 > You own ONLY the files listed in your task. Never edit `src/main.rs`, `src/lib.rs`,
 > `Cargo.toml`, `CONTRACT.md`, or another agent's files. If you need a change to a

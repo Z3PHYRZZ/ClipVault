@@ -27,6 +27,17 @@ contrast, and alpha variants of the two for hairlines/shadows):
   (FileVersion/ProductVersion), Inno Setup script, installer filename, and docs.
   `CHANGELOG.md` has the [0.1.3] entry; [0.1.2], [0.1.1], [0.1.0] preserved.
 
+## What's new in this build (same v0.1.3 tag)
+
+- **Photo preview** — image entries show a lazy-loaded thumbnail directly in the
+  history list, and the preview panel renders the full photo (300px, `Contain`)
+  with its pixel dimensions. No GUI-thread file reads.
+- **Copy provenance** — every capture records `source_app` (the process that owned
+  the clipboard, e.g. `chrome.exe`) and `source_url` (the web page URL from the
+  browser's `CF_HTML` `SourceURL:` header, or a bare http(s) link in the text).
+  Best-effort; shown in the history subtitle and a SOURCE section in the preview.
+  Persisted in SQLite schema v4.
+
 ## Assets
 
 | Asset | What it is |
@@ -53,7 +64,7 @@ Full docs: [docs/index.md](https://github.com/Z3PHYRZZ/ClipVault/blob/main/docs/
 
 - `cargo check` 0 errors / 0 warnings · `cargo fmt --check` clean ·
   `cargo clippy --all-targets -- -D warnings` 0 warnings
-- `cargo test` **35 passed / 0 failed**
+- `cargo test` **40 passed / 0 failed** (29 unit + 11 integration)
 - Release exe version `0.1.3.0`, PE subsystem 2 (GUI)
 - Installer rebuilt; silent install / run / uninstall verified
 - Exactly 2 chromatic hex definitions in source; no unrelated accent colors

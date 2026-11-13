@@ -45,13 +45,21 @@ ClipVault/
       hash.rs                  # content hashing (sha2) + dedup key
       filter.rs               # SearchFilter, ContentKind, DateRange
     platform/
-      mod.rs                  # traits: ClipboardAccess, HotkeySource, TrayIcon, Startup
-      clipboard.rs            # windows-rs clipboard (text/Unicode/image/files)
-      clipboard_monitor.rs    # event-driven listener + worker thread
-      hotkeys.rs              # RegisterHotKey message-loop thread
-      tray.rs                 # Shell_NotifyIcon + hidden message window + menu
-      startup.rs              # HKCU Run registry key
-      winutil.rs              # HWND_MESSAGE window, WM_* helpers, scoped guards
+      mod.rs                  # traits + handle types + cfg dispatch
+      clipboard_ext.rs        # full clipboard read/write (text/image/files) -> ClipCapture
+      clipboard.rs            # legacy text-only backend (kept, not dispatched)
+      listener_full.rs        # AddClipboardFormatListener thread + self-filter
+      source.rs              # copy provenance: owner process + CF_HTML SourceURL
+      dib.rs                 # DIB/DIBV5 <-> PNG (headless-testable)
+      hdrop.rs               # DROPFILES build/parse + file metadata
+      format.rs              # CF_* constants + GetClipboardSequenceNumber
+      hotkeys_full.rs        # RegisterHotKey thread + quick-paste
+      tray_full.rs           # Shell_NotifyIconW + context menu + NIM_DELETE
+      startup.rs             # HKCU Run registry value
+      singleton.rs           # named-mutex single instance
+      handles.rs             # ThreadHandle: WM_QUIT + join on shutdown
+      icon.rs                # procedural RGBA icon + HICON/.ico
+      winutil.rs             # message-only HWND + bounded OpenClipboard guard
     workers/
       mod.rs
       bus.rs                  # typed channels: Event/Command/Result
@@ -183,7 +191,10 @@ These are documented because they dictate the design and must not be silently sk
   file_meta TEXT, file_paths TEXT, created_at INTEGER NOT NULL,
   last_used_at INTEGER NOT NULL, use_count INTEGER NOT NULL DEFAULT 1,
   pinned INTEGER NOT NULL DEFAULT 0, favorite INTEGER NOT NULL DEFAULT 0,
-  source_app TEXT, byte_size INTEGER NOT NULL)`.
+  source_app TEXT, source_url TEXT, byte_size INTEGER NOT NULL)`.
+- Migration **v4** adds `source_url` (`ALTER TABLE ... ADD COLUMN`) with a partial
+  index; `source_app` has existed since v1. Both hold best-effort copy provenance
+  captured from the clipboard owner process / browser `CF_HTML` `SourceURL:` header.
 - Indexes: `content_hash` (dedup, UNIQUE-ish with kind), `created_at DESC`,
   `kind`, `pinned`, `favorite`. FTS5 virtual table `entries_fts(text_content,
   file_paths, content='entries')` kept in sync by triggers for fast substring/token

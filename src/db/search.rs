@@ -5,7 +5,7 @@ use rusqlite::Connection;
 
 const SELECT_COLS: &str = "e.id, e.kind, e.content_hash, e.text_content, e.image_path, e.image_w, \
      e.image_h, e.file_paths_json, e.file_meta_json, e.created_at, e.last_used_at, \
-     e.use_count, e.pinned, e.favorite, e.source_app, e.byte_size";
+     e.use_count, e.pinned, e.favorite, e.source_app, e.source_url, e.byte_size";
 
 fn row_to_entry(r: &rusqlite::Row<'_>) -> rusqlite::Result<ClipEntry> {
     let kind_s: String = r.get(1)?;
@@ -25,7 +25,8 @@ fn row_to_entry(r: &rusqlite::Row<'_>) -> rusqlite::Result<ClipEntry> {
         pinned: r.get::<_, i64>(12)? != 0,
         favorite: r.get::<_, i64>(13)? != 0,
         source_app: r.get(14)?,
-        byte_size: r.get(15)?,
+        source_url: r.get(15)?,
+        byte_size: r.get(16)?,
     })
 }
 

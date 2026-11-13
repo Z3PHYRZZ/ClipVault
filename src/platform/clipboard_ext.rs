@@ -13,7 +13,7 @@
 //! - We hash the ORIGINAL DIB bytes (not the normalized PNG) for stable dedup.
 
 use crate::platform::{ClipboardAccess, PlatformError};
-use crate::workers::ClipPayload;
+use crate::workers::{ClipCapture, ClipPayload};
 
 #[cfg(windows)]
 mod imp {
@@ -115,8 +115,12 @@ mod imp {
     pub struct FullClipboard;
 
     impl ClipboardAccess for FullClipboard {
-        fn read(&self) -> Result<Option<ClipPayload>, PlatformError> {
+        fn read(&self) -> Result<Option<ClipCapture>, PlatformError> {
             let guard = ClipboardGuard::open(5, 15)?;
+            // Provenance must be captured while the clipboard is still open:
+            // GetClipboardData(CF_HTML) and GetClipboardOwner need the open lock.
+            let (source_app, html_url) = crate::platform::source::capture();
+            let mut source_url = html_url;
             for &fmt in read_priority() {
                 let bytes = match get_bytes(fmt, &guard)? {
                     Some(b) => b,
@@ -126,20 +130,32 @@ mod imp {
                     CF_UNICODETEXT => {
                         let text = utf16_to_string(&bytes);
                         if !text.is_empty() {
-                            return Ok(Some(ClipPayload::Text(text)));
+                            if source_url.is_none() {
+                                source_url = crate::platform::source::url_from_text(&text);
+                            }
+                            return Ok(Some(
+                                ClipCapture::new(ClipPayload::Text(text))
+                                    .with_source(source_app, source_url),
+                            ));
                         }
                     }
                     CF_HDROP => {
                         let paths = hdrop::parse_dropfiles(&bytes);
                         if !paths.is_empty() {
                             let metas = hdrop::query_metadata(&paths);
-                            return Ok(Some(ClipPayload::Files(metas)));
+                            return Ok(Some(
+                                ClipCapture::new(ClipPayload::Files(metas))
+                                    .with_source(source_app, source_url),
+                            ));
                         }
                     }
                     f if f == format::CF_DIBV5 || f == format::CF_DIB => {
                         if let Ok((png, w, h)) = crate::platform::dib::dib_to_png(&bytes) {
                             let hash = hash_bytes(&bytes);
-                            return Ok(Some(ClipPayload::Image { png, w, h, hash }));
+                            return Ok(Some(
+                                ClipCapture::new(ClipPayload::Image { png, w, h, hash })
+                                    .with_source(source_app, source_url),
+                            ));
                         }
                     }
                     // CF_BITMAP is a device-dependent HBITMAP handle, not a memory
@@ -201,7 +217,7 @@ mod imp {
     use super::*;
     pub struct FullClipboard;
     impl ClipboardAccess for FullClipboard {
-        fn read(&self) -> Result<Option<ClipPayload>, PlatformError> {
+        fn read(&self) -> Result<Option<ClipCapture>, PlatformError> {
             Ok(None)
         }
         fn write_text(&self, _s: &str) -> Result<(), PlatformError> {

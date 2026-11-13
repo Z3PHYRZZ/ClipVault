@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.3] - 2026-11-13
 
+### Added
+- **Photo preview**: image entries now show a lazy-loaded thumbnail (52x42) in
+  the history list via `iced::image::Handle::from_path` — no GUI-thread file read.
+  The preview panel renders the photo at 300px with `ContentFit::Contain` from
+  either the loaded PNG bytes or the asset path, and shows the image dimensions.
+- **Copy provenance**: each capture records where it came from.
+  - `source_app`: the clipboard owner process (e.g. `chrome.exe`), resolved via
+    `GetClipboardOwner` -> `GetWindowThreadProcessId` -> `OpenProcess` ->
+    `QueryFullProcessImageNameW` (basename only, no private paths stored).
+  - `source_url`: the web page URL, parsed from the browser's `CF_HTML`
+    `SourceURL:` header (`RegisterClipboardFormatW("HTML Format")`), with a
+    fallback to a bare `http(s)://` URL in the copied text.
+  - Both are best-effort and NULL when unknown. Stored in SQLite (schema **v4**,
+    `ALTER TABLE ... ADD COLUMN source_url`, partial index) and shown in the
+    history subtitle + a dedicated SOURCE section in the preview.
+- `src/platform/source.rs` (provenance helper, 3 unit tests) and
+  `src/workers::ClipCapture` (payload + provenance wrapper). `ClipboardAccess::read`
+  now returns `ClipCapture`; provenance is captured while the clipboard is still
+  open, since `GetClipboardData`/`GetClipboardOwner` require the open lock.
+- DB tests for provenance persistence/refresh + 40 total automated tests.
+
 ### Changed
 - **Brand palette replaced with two colors** across the entire app (GUI theme,
   tray icon, app icon, badges, buttons, borders, shadows, docs):

@@ -9,11 +9,12 @@ pub mod hotkeys_full;
 pub mod icon;
 pub mod listener_full;
 pub mod singleton;
+pub mod source;
 pub mod startup;
 pub mod tray_full;
 pub mod winutil;
 
-use crate::workers::{ClipPayload, WorkerEvent};
+use crate::workers::WorkerEvent;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 
@@ -28,8 +29,10 @@ pub enum PlatformError {
 }
 
 /// OS clipboard access trait. Implemented by the Windows backend.
+/// `read()` returns the payload plus best-effort provenance (captured while the
+/// clipboard is still open, since `GetClipboardData`/`GetClipboardOwner` require it).
 pub trait ClipboardAccess: Send {
-    fn read(&self) -> Result<Option<ClipPayload>, PlatformError>;
+    fn read(&self) -> Result<Option<crate::workers::ClipCapture>, PlatformError>;
     fn write_text(&self, s: &str) -> Result<(), PlatformError>;
     fn write_image(&self, png: &[u8]) -> Result<(), PlatformError>;
     fn write_files(&self, paths: &[String]) -> Result<(), PlatformError>;

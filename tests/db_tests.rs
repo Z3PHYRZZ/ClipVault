@@ -7,7 +7,7 @@ use clipvault::domain::{
     ContentKind, DateRange, FileMetadata, SearchFilter, dedup_key, hash_bytes, hash_paths,
     hash_text,
 };
-use clipvault::workers::ClipPayload;
+use clipvault::workers::{ClipCapture, ClipPayload};
 
 fn ok<T, E: std::fmt::Display>(r: Result<T, E>) -> T {
     match r {
@@ -49,12 +49,16 @@ fn text(s: &str) -> ClipPayload {
     ClipPayload::Text(s.to_string())
 }
 
+fn cap(p: ClipPayload) -> ClipCapture {
+    ClipCapture::new(p)
+}
+
 #[test]
 fn migration_applies_and_version() {
     let s = store();
     let c = s.conn();
     let version: u32 = ok(c.query_row("PRAGMA user_version", [], |r| r.get(0)));
-    assert_eq!(version, 3, "migrations must land on user_version 3");
+    assert_eq!(version, 4, "migrations must land on user_version 4");
 
     let entries: i64 = ok(c.query_row(
         "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='entries'",
@@ -76,7 +80,7 @@ fn migration_applies_and_version() {
 fn insert_text_then_get() {
     let s = store();
     let c = s.conn();
-    let id = ok(insert_dedup(c, &text("hello world")));
+    let id = ok(insert_dedup(c, &cap(text("hello world"))));
     assert!(id > 0, "insert must return a real rowid");
 
     let e = some(ok(get(c, id)));
@@ -92,11 +96,49 @@ fn insert_text_then_get() {
 }
 
 #[test]
+fn source_provenance_is_persisted_and_refreshed_on_duplicate() {
+    let s = store();
+    let c = s.conn();
+    let capture = ClipCapture::new(ClipPayload::Text("from a web page".to_string())).with_source(
+        Some("chrome.exe".to_string()),
+        Some("https://example.com/a".to_string()),
+    );
+    let id = ok(insert_dedup(c, &capture));
+
+    let e = some(ok(get(c, id)));
+    assert_eq!(e.source_app.as_deref(), Some("chrome.exe"));
+    assert_eq!(e.source_url.as_deref(), Some("https://example.com/a"));
+
+    // A re-copy with unknown provenance must not erase the known source.
+    ok(insert_dedup(c, &cap(text("from a web page"))));
+    let e2 = some(ok(get(c, id)));
+    assert_eq!(e2.use_count, 2);
+    assert_eq!(e2.source_app.as_deref(), Some("chrome.exe"));
+    assert_eq!(e2.source_url.as_deref(), Some("https://example.com/a"));
+
+    // A re-copy with a new source refreshes it.
+    let capture2 = ClipCapture::new(ClipPayload::Text("from a web page".to_string())).with_source(
+        Some("firefox.exe".to_string()),
+        Some("https://other.org/b".to_string()),
+    );
+    ok(insert_dedup(c, &capture2));
+    let e3 = some(ok(get(c, id)));
+    assert_eq!(e3.source_app.as_deref(), Some("firefox.exe"));
+    assert_eq!(e3.source_url.as_deref(), Some("https://other.org/b"));
+
+    // search() must also project the provenance columns.
+    let rows = ok(search(c, &filter()));
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0].source_app.as_deref(), Some("firefox.exe"));
+    assert_eq!(rows[0].source_url.as_deref(), Some("https://other.org/b"));
+}
+
+#[test]
 fn duplicate_text_bumps_use_count() {
     let s = store();
     let c = s.conn();
-    let first = ok(insert_dedup(c, &text("duplicate text")));
-    let second = ok(insert_dedup(c, &text("duplicate text")));
+    let first = ok(insert_dedup(c, &cap(text("duplicate text"))));
+    let second = ok(insert_dedup(c, &cap(text("duplicate text"))));
     assert_eq!(first, second, "dedup must reuse the same rowid");
 
     assert_eq!(ok(count(c, &filter())), 1, "duplicate must not add a row");
@@ -112,8 +154,8 @@ fn duplicate_text_bumps_use_count() {
 fn different_kinds_no_collision() {
     let s = store();
     let c = s.conn();
-    let text_id = ok(insert_dedup(c, &text("x")));
-    let files_id = ok(insert_dedup(c, &ClipPayload::Files(vec![fm("C:\\x")])));
+    let text_id = ok(insert_dedup(c, &cap(text("x"))));
+    let files_id = ok(insert_dedup(c, &cap(ClipPayload::Files(vec![fm("C:\\x")]))));
 
     assert_ne!(text_id, files_id, "kind is part of the dedup key");
     assert_eq!(ok(count(c, &filter())), 2);
@@ -125,9 +167,9 @@ fn different_kinds_no_collision() {
 fn set_pin_favorite_then_search() {
     let s = store();
     let c = s.conn();
-    let a = ok(insert_dedup(c, &text("first entry")));
-    let b = ok(insert_dedup(c, &text("second entry")));
-    let d = ok(insert_dedup(c, &text("third entry")));
+    let a = ok(insert_dedup(c, &cap(text("first entry"))));
+    let b = ok(insert_dedup(c, &cap(text("second entry"))));
+    let d = ok(insert_dedup(c, &cap(text("third entry"))));
     ok(set_pin(c, b, true));
     ok(set_favorite(c, d, true));
 
@@ -161,9 +203,9 @@ fn set_pin_favorite_then_search() {
 fn search_matches_fts_and_filters() {
     let s = store();
     let c = s.conn();
-    ok(insert_dedup(c, &text("alpha one")));
-    ok(insert_dedup(c, &text("beta two")));
-    ok(insert_dedup(c, &text("gamma three")));
+    ok(insert_dedup(c, &cap(text("alpha one"))));
+    ok(insert_dedup(c, &cap(text("beta two"))));
+    ok(insert_dedup(c, &cap(text("gamma three"))));
 
     // build_where emits a `"alpha"*` FTS5 prefix query plus LIKE fallbacks.
     let hits = ok(search(
@@ -220,9 +262,9 @@ fn search_matches_fts_and_filters() {
 fn delete_and_clear_all() {
     let s = store();
     let c = s.conn();
-    let a = ok(insert_dedup(c, &text("keep me")));
-    let b = ok(insert_dedup(c, &text("delete me")));
-    ok(insert_dedup(c, &text("also keep")));
+    let a = ok(insert_dedup(c, &cap(text("keep me"))));
+    let b = ok(insert_dedup(c, &cap(text("delete me"))));
+    ok(insert_dedup(c, &cap(text("also keep"))));
 
     ok(delete(c, b));
     assert_eq!(ok(count(c, &filter())), 2);
@@ -251,7 +293,7 @@ fn prune_respects_pins() {
     let c = s.conn();
     let mut ids = Vec::new();
     for i in 0..5 {
-        ids.push(ok(insert_dedup(c, &text(&format!("prune entry {i}")))));
+        ids.push(ok(insert_dedup(c, &cap(text(&format!("prune entry {i}"))))));
     }
     let pinned_id = ids[2];
     ok(set_pin(c, pinned_id, true));
