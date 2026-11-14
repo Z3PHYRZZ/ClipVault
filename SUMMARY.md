@@ -1,25 +1,19 @@
 # ClipVault — Session Summary
 
-## CURRENT STATUS (2026-11-14)
-- **In progress:** v0.1.4 "Organization tools" — new Release tag, v0.1.3 left stable.
-- Scope (decided): tags/labels + tag filter, bulk select + multi-delete + bulk
-  pin/favorite, portable JSON export/import, per-type retention caps, Comfortable/
-  Compact list density. Plan in `V014_PLAN.md`.
-- Implemented & gated: schema **v5** (`tags_json` + index, v4->v5 row-preserving
-  migration test), `src/db/io.rs` (backup JSON + base64, 50 MB cap),
-  `src/db/bulk.rs` (tags CRUD, bulk ops, capped prune, export/import),
-  `src/domain` types (`ClipEntry.tags_json`, `SearchFilter.tag`, `ListDensity`),
-  Settings `#[serde(default)]` new fields, worker bus + db_worker dispatch,
-  Message/state/update wiring, GUI (checkboxes outside mouse_area, selection
-  toolbar, tag chips, tag editor, tag picker, settings controls, density button,
-  delete-selected dialog), 9 new tests.
-- Gates: `cargo check --all-targets`, `clippy -D warnings`, `cargo test`
-  (**49 passed**) all green.
-- Next: full docs already updated (CHANGELOG 0.1.4, RELEASE_NOTES, README,
-  USER_GUIDE, ARCHITECTURE). Remaining: `cargo build --release` + icon + installer,
-  install/run/uninstall smoke, commit + push, create v0.1.4 GitHub Release with
-  both assets. Version already bumped to 0.1.4 in Cargo.toml/Cargo.lock/build.rs/
-  Inno script/docs; `winres` correctly still `0.1.12`.
+## CURRENT STATUS (2026-11-14) — v0.1.4 SHIPPED
+- **v0.1.4 "Organization tools" is live:** commit `38366e6`, tag/Release
+  https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4. v0.1.3 stays stable;
+  all five releases (v0.1.0/1/2/3/4) live. Worktree clean, local == remote.
+- Assets: `ClipVault-0.1.4-Setup.exe` (6,419,671 B, sha256 `f08eb0ea…`) +
+  `clipvault.exe` (14,142,976 B, sha256 `48c043fc…`); both verified byte-for-byte
+  against the GitHub API digests. exe `0.1.4.0`, PE subsystem 2 (no console).
+- Gates: fmt --check / check --all-targets / clippy -D warnings / test all exit 0;
+  **49 tests** (33 unit + 10 db + 1 migration + 5 org); release build + installer;
+  install / run (stays up) / uninstall 0 / True / 0.
+- Scope delivered: tags/labels + tag filter, bulk select + multi-delete + bulk
+  pin/favorite, portable JSON export/import (offline, dedup-safe, 50 MB cap),
+  per-type retention caps, Comfortable/Compact density. Plan in `V014_PLAN.md`.
+- Next: nothing pending. Await the next feature request.
 
 **Goal:** Production-quality Windows clipboard manager in Rust (edition 2024) + Iced,
 SQLite, windows-rs. Full requirements in the /goal command; 11 development phases;
