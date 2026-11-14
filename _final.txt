@@ -1,0 +1,131 @@
+﻿FMT=0
+cargo :    Compiling clipvault v0.1.6 
+(C:\Users\Dodot\Documents\GitHub\ClipVault)
+At line:1 char:225
++ ... end _final.txt -Encoding utf8; cargo check --all-targets 2>&1 | 
+Out-F ...
++                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling cl...tHub\Clip 
+   Vault):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    Finished `dev` profile [optimized + debuginfo] target(s) in 10.12s
+CHECK=0
+cargo :    Compiling clipvault v0.1.6 
+(C:\Users\Dodot\Documents\GitHub\ClipVault)
+At line:1 char:370
++ ... Encoding utf8; cargo clippy --all-targets -- -D warnings 2>&1 | 
+Out-F ...
++                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling cl...tHub\Clip 
+   Vault):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    Finished `dev` profile [optimized + debuginfo] target(s) in 2.64s
+CLIPPY=0
+cargo :    Compiling clipvault v0.1.6 
+(C:\Users\Dodot\Documents\GitHub\ClipVault)
+At line:1 char:532
++ ... | Out-File -Append _final.txt -Encoding utf8; cargo test 2>&1 | 
+Out-F ...
++                                                   ~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling cl...tHub\Clip 
+   Vault):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    Finished `test` profile [optimized + debuginfo] target(s) in 14.22s
+     Running unittests src\lib.rs 
+(target\debug\deps\clipvault-e476e4948881ca6b.exe)
+
+running 37 tests
+test platform::backdrop::tests::accent_layout_sizes_are_correct ... ok
+test db::io::tests::backup_json_roundtrip_preserves_tags ... ok
+test platform::backdrop::tests::none_is_the_default_and_not_native ... ok
+test db::bulk::tests::cap_for_falls_back_to_global ... ok
+test platform::clipboard_ext::imp::tests::hash_is_stable ... ok
+test db::io::tests::base64_roundtrip_various_lengths ... ok
+test db::io::tests::rejects_wrong_format_and_future_version ... ok
+test platform::backdrop::tests::null_hwnd_is_rejected ... ok
+test platform::backdrop::tests::backdrop_kind_labels_are_ascii_and_distinct ... ok
+test platform::format::tests::read_priority_text_first ... ok
+test platform::dib::tests::malformed_header_is_rejected ... ok
+test platform::dib::tests::decode_1x1_24bpp ... ok
+test platform::format::tests::read_priority_contains_all_five_formats ... ok
+test platform::format::tests::read_priority_has_no_duplicates ... ok
+test platform::dib::tests::palette_8bpp_and_bitfields_32bpp ... ok
+test platform::clipboard_ext::imp::tests::utf16_roundtrip ... ok
+test platform::dib::tests::roundtrip_png_to_dib_to_png ... ok
+test platform::hdrop::tests::parse_narrow_handbuilt ... ok
+test platform::hdrop::tests::parse_short_buffer_returns_empty ... ok
+test platform::hdrop::tests::parse_stops_at_double_nul ... ok
+test platform::hdrop::tests::header_layout_and_empty_double_nul ... ok
+test platform::hdrop::tests::parse_truncated_is_graceful ... ok
+test platform::dib::tests::decode_2x2_32bpp_bgra ... ok
+test platform::hdrop::tests::parse_narrow_lossy_high_bytes ... ok
+test platform::handles::tests::shutdown_is_idempotent ... ok
+test platform::hdrop::tests::query_metadata_directory ... ok
+test platform::dib::tests::decode_negative_height_top_down ... ok
+test platform::hdrop::tests::roundtrip_empty ... ok
+test platform::icon::tests::rgba_icon_is_32x32_rgba ... ok
+test platform::icon::tests::ico_has_valid_header_and_png ... ok
+test platform::hdrop::tests::roundtrip_single_ascii ... ok
+test platform::hdrop::tests::roundtrip_many_with_unicode ... ok
+test platform::source::tests::bare_url_and_embedded_url ... ok
+test platform::source::tests::cf_html_source_url ... ok
+test platform::source::tests::cf_html_without_source_url ... ok
+test platform::hdrop::tests::query_metadata_existing_file_and_missing ... ok
+test platform::icon::tests::write_ico_roundtrips ... ok
+
+test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src\main.rs 
+(target\debug\deps\clipvault-d074c1a7d182ab28.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\db_tests.rs 
+(target\debug\deps\db_tests-d701afc3ca581630.exe)
+
+running 10 tests
+test hash_paths_and_dedup_key_are_deterministic ... ok
+test insert_text_then_get ... ok
+test migration_applies_and_version ... ok
+test duplicate_text_bumps_use_count ... ok
+test different_kinds_no_collision ... ok
+test prune_respects_pins ... ok
+test source_provenance_is_persisted_and_refreshed_on_duplicate ... ok
+test set_pin_favorite_then_search ... ok
+test search_matches_fts_and_filters ... ok
+test delete_and_clear_all ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests\migration_tests.rs 
+(target\debug\deps\migration_tests-df410b4d485be23a.exe)
+
+running 1 test
+test v3_database_upgrades_to_v5_preserving_rows ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests\org_tests.rs 
+(target\debug\deps\org_tests-a31515b510b9600e.exe)
+
+running 5 tests
+test import_rejects_invalid_backup ... ok
+test tags_roundtrip_and_filter ... ok
+test export_import_roundtrip_is_dedup_safe ... ok
+test per_type_prune_keeps_pinned_and_respects_cap ... ok
+test bulk_delete_and_flags ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+   Doc-tests clipvault
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+TEST=0

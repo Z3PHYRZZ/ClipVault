@@ -49,8 +49,8 @@ impl BackdropKind {
 pub fn apply(hwnd: isize, dark: bool) -> Result<BackdropKind, String> {
     use windows::Win32::Foundation::HWND;
     use windows::Win32::Graphics::Dwm::{
-        DwmEnableBlurBehindWindow, DwmSetWindowAttribute, DWMWA_SYSTEMBACKDROP_TYPE,
-        DWMWA_USE_IMMERSIVE_DARK_MODE, DWM_BB_ENABLE, DWM_BLURBEHIND, DWMSBT_MAINWINDOW,
+        DWM_BB_ENABLE, DWM_BLURBEHIND, DWMSBT_MAINWINDOW, DWMWA_SYSTEMBACKDROP_TYPE,
+        DWMWA_USE_IMMERSIVE_DARK_MODE, DwmEnableBlurBehindWindow, DwmSetWindowAttribute,
     };
     use windows::core::BOOL;
 
@@ -125,7 +125,7 @@ struct WindowCompositionAttributeData {
 type SetWindowCompositionAttributeFn = unsafe extern "system" fn(
     windows::Win32::Foundation::HWND,
     *mut WindowCompositionAttributeData,
-) -> windows::Win32::Foundation::BOOL;
+) -> windows::core::BOOL;
 
 #[cfg(windows)]
 fn try_acrylic(hwnd: windows::Win32::Foundation::HWND, dark: bool) -> Option<BackdropKind> {

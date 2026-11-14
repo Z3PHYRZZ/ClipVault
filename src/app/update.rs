@@ -449,17 +449,14 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
             // Re-apply the DWM immersive-dark flag so Mica matches the new theme.
             backdrop_task(matches!(t, crate::config::ThemeMode::Dark))
         }
-        Message::ApplyBackdrop => {
-            backdrop_task(matches!(
-                state.settings.theme,
-                crate::config::ThemeMode::Dark
-            ))
-        }
+        Message::ApplyBackdrop => backdrop_task(matches!(
+            state.settings.theme,
+            crate::config::ThemeMode::Dark
+        )),
         Message::BackdropApplied(kind) => {
             state.backdrop = kind;
             state.status = format!("Backdrop: {}", kind.label());
             Task::none()
-        }
         }
         Message::SetMaxEntries(n) => {
             state.settings.max_entries = n;
