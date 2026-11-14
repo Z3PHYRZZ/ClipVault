@@ -5,6 +5,40 @@ All notable changes to ClipVault are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-11-14
+
+Frosted-glass theme refinement. New GitHub Release tag `v0.1.5`; v0.1.4 stays stable.
+
+### Changed (theme)
+- **Soft ambient gradient base** behind all UI layers (`Background::Gradient` /
+  `gradient::Linear`, 3 static stops) — depth without backdrop blur or clutter.
+- **Frosted surface hierarchy**: sidebar / top search bar / selection toolbar get
+  a deeper tinted glass (CREAM/INK at ~78-80% alpha + diffused 20px shadow);
+  entry cards / preview / status bar get a softer ~64-66% glass with a 14px shadow.
+- **1px specular borders**: `alpha(WHITE, 0.40)` in Light, `alpha(WHITE, 0.08)` in
+  Dark, plus contrasting INK/CREAM hairlines separating overlapping layers.
+- **Buttons, inputs, dropdowns**: crisp semi-transparent pills with specular edges
+  (`theme::input_style` / `pick_list_style`), blended into the frosted containers.
+- **Hover elevation**: shadow lifts (equivalent of `translateY(-1px)`), border
+  thickens, tint shifts — message-driven, no animated blur.
+- **Readability**: text contrast verified >= 6.28:1 on buttons and >= 11.7:1 on
+  glass surfaces in both themes, across the whole gradient (WCAG AA is 4.5:1).
+  Semi-transparent button fills are composited over the ambient base before the
+  text-color decision, preventing invisible dark-on-dark text.
+- **Performance**: no compositor blur filter at all; static gradients, constant
+  alpha tints, and fixed-radius shadows only. Hover changes color/offset/border,
+  never a blur radius, so scrolling and window resize stay smooth.
+
+### Known limitation
+- **True OS-level Mica/Acrylic translucency is NOT applied.** Iced 0.13 hides the
+  HWND (`iced_winit` keeps it internal); `DwmSetWindowAttribute(
+  DWMWA_SYSTEMBACKDROP_TYPE, DWMSBT_MAINWINDOW)` would require patching the GUI
+  framework or a fragile title-based `FindWindowW` race. Mica is also Windows 11
+  only. The ambient gradient + layered alpha-tinted surfaces are the
+  framework-supported approximation and keep Windows 10 compatibility.
+- Two brand colors only: CREAM `#F2E9E4` + INK `#22223B`, with WHITE/CHARCOAL
+  neutrals. Frost tokens are alpha/tint derivatives, not new hues.
+
 ## [0.1.4] - 2026-11-14
 
 Organization tools. New GitHub Release tag `v0.1.4`; v0.1.3 stays stable.
@@ -105,7 +139,7 @@ Organization tools. New GitHub Release tag `v0.1.4`; v0.1.3 stays stable.
   token-driven; button text picks contrast per surface.
 - `src/platform/icon.rs` redrawn with only the two colors: Ink rounded square,
   Cream card, Ink header + "V", Cream outline.
-- Version bumped to 0.1.4 in `Cargo.toml`, `build.rs` (FileVersion/ProductVersion),
+- Version bumped to 0.1.5 in `Cargo.toml`, `build.rs` (FileVersion/ProductVersion),
   Inno Setup script, installer filename, and all docs.
 
 ## [0.1.2] - 2026-11-13
@@ -154,7 +188,7 @@ First public release. A complete, private Windows clipboard manager built in Rus
   and favorite rows; orphaned image assets are garbage-collected.
 
 **GUI**
-- Original five-color pastel-rose palette (replaced in 0.1.4): Sage `#D8E2DC`,
+- Original five-color pastel-rose palette (replaced in 0.1.5): Sage `#D8E2DC`,
   Peach `#FFE5D9`, Pastel Pink `#FFCAD4`, Dusty Rose `#F4ACB7`, Muted Mauve `#9D8189`.
 - Light theme (CREAM background, ROSE panels, CREAM cards) and a complementary
   dark theme (deep charcoal, muted rose/sage accents) — not a simple inversion.
@@ -218,6 +252,7 @@ First public release. A complete, private Windows clipboard manager built in Rus
 - `CF_BITMAP` (device-dependent HBITMAP) is intentionally skipped; DIB/DIBV5 are
   preferred. RLE-compressed DIBs are rejected.
 
+[0.1.5]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.5
 [0.1.4]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4
 [0.1.3]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3
 [0.1.2]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.2

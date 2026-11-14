@@ -216,13 +216,26 @@ These are documented because they dictate the design and must not be silently sk
 
 ## 5. Theme & palette (exact two brand colors)
 
-Design tokens live in `src/gui/theme.rs` (palette/styles) and `src/gui/spacing.rs`
-(spacing, radii, type scale — the single source of truth). Every view uses
-`sp::*` constants on a 4px grid (4/8/12/16/24/32) rather than magic numbers, with
-a type hierarchy of 24/18/14/13/11 px. Rounded cards (14px), buttons (10px),
-badges (8px), soft 1px Mauve-alpha hairline borders, subtle shadows, and
-hover/press blends between CREAM and INK. Pin/favorite state reads through an
-INK fill + 2px border (`active_button_style`) instead of glyphs —
+Design tokens live in `src/gui/theme.rs` (palette/styles), `src/contracts.rs`
+(color + frosted-glass tokens), and `src/gui/spacing.rs` (spacing, radii, type
+scale — the single source of truth). Every view uses `sp::*` constants on a 4px
+grid (4/8/12/16/24/32) rather than magic numbers, with a type hierarchy of
+28/21/16/14/12 px. Rounded cards (16px), buttons (12px), badges (9px).
+
+**Frosted-glass theme (v0.1.5):** `src/gui/theme.rs::ambient_background()` returns a
+static `Background::Gradient` (3 stops) placed behind all UI layers. Surfaces are
+alpha-tinted CREAM/INK glass — deeper (`~0.78-0.80`) for sidebar/search/toolbar,
+softer (`~0.64-0.66`) for cards/preview/status — with 1px specular WHITE borders
+(0.40 light / 0.08 dark) and diffused shadows (20px panel / 14px card). Buttons,
+inputs, and dropdowns are crisp semi-transparent pills. Hover lifts the shadow
+offset (`translateY(-1px)` equivalent) and thickens the border; no animated blur.
+No compositor blur filter exists in Iced 0.13, and native DWM Mica is not applied
+because `iced_winit` hides the HWND — documented in `V015_FROSTED_PLAN.md`. All
+frost tokens are alpha/tint derivatives of CREAM/INK/WHITE, not new hues. Text
+contrast is >= 6.28:1 on buttons and >= 11.7:1 on glass in both themes.
+
+Pin/favorite state reads through an INK fill + 2px border (`active_button_style`)
+instead of glyphs —
 Iced's bundled Fira Sans has no star/dingbat glyphs and renders them as tofu, so
 ALL user-visible UI strings are plain ASCII.
 

@@ -2,11 +2,12 @@
 use crate::app::{AppState, Message};
 use crate::config::ThemeMode;
 use crate::gui::spacing as sp;
+use crate::gui::theme;
 use crate::gui::widgets;
 use iced::widget::{
     Space, checkbox, column, container, pick_list, row, scrollable, text, text_input,
 };
-use iced::{Element, Length};
+use iced::{Element, Length, Theme};
 
 pub fn settings_view(state: &AppState) -> Element<'_, Message> {
     let s = &state.settings;
@@ -22,7 +23,8 @@ pub fn settings_view(state: &AppState) -> Element<'_, Message> {
                 Some(s.theme),
                 Message::SetTheme,
             )
-            .padding(sp::INPUT_PAD),
+            .padding(sp::INPUT_PAD)
+            .style(|t: &Theme, st| theme::pick_list_style(t, st)),
         ]
         .spacing(sp::GAP_TIGHT)
         .align_y(iced::Alignment::Center),
@@ -48,6 +50,7 @@ pub fn settings_view(state: &AppState) -> Element<'_, Message> {
                     v.parse().unwrap_or(0)
                 ))
                 .padding(sp::INPUT_PAD)
+                .style(|t: &Theme, st| theme::input_style(t, st))
                 .width(110.0),
             text("Image max").width(Length::FillPortion(1)),
             iced::widget::text_input("0", &s.max_entries_image.to_string())
@@ -56,6 +59,7 @@ pub fn settings_view(state: &AppState) -> Element<'_, Message> {
                     v.parse().unwrap_or(0)
                 ))
                 .padding(sp::INPUT_PAD)
+                .style(|t: &Theme, st| theme::input_style(t, st))
                 .width(110.0),
             text("Files max").width(Length::FillPortion(1)),
             iced::widget::text_input("0", &s.max_entries_files.to_string())
@@ -64,6 +68,7 @@ pub fn settings_view(state: &AppState) -> Element<'_, Message> {
                     v.parse().unwrap_or(0)
                 ))
                 .padding(sp::INPUT_PAD)
+                .style(|t: &Theme, st| theme::input_style(t, st))
                 .width(110.0),
         ]
         .spacing(sp::GAP_TIGHT)
@@ -78,7 +83,8 @@ pub fn settings_view(state: &AppState) -> Element<'_, Message> {
                 Some(s.list_density),
                 Message::SetListDensity,
             )
-            .padding(sp::INPUT_PAD),
+            .padding(sp::INPUT_PAD)
+            .style(|t: &Theme, st| theme::pick_list_style(t, st)),
         ]
         .spacing(sp::GAP_TIGHT)
         .align_y(iced::Alignment::Center),

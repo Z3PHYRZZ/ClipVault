@@ -2,9 +2,10 @@
 use crate::app::{AppState, Message};
 use crate::domain::ContentKind;
 use crate::gui::spacing as sp;
+use crate::gui::theme;
 use crate::gui::widgets;
 use iced::widget::{Space, column, container, image, text};
-use iced::{Element, Length};
+use iced::{Element, Length, Theme};
 
 pub fn preview_panel(state: &AppState) -> Element<'_, Message> {
     let Some(id) = state.selected else {
@@ -14,12 +15,14 @@ pub fn preview_panel(state: &AppState) -> Element<'_, Message> {
         ))
         .width(Length::FillPortion(2))
         .padding(sp::CONTENT_PAD)
+        .style(|t: &Theme| theme::glass_surface(t))
         .into();
     };
     let Some(entry) = state.entries.iter().find(|e| e.id == id) else {
         return container(widgets::empty_state("Entry unavailable", ""))
             .width(Length::FillPortion(2))
             .padding(sp::CONTENT_PAD)
+            .style(|t: &Theme| theme::glass_surface(t))
             .into();
     };
 
@@ -111,6 +114,7 @@ pub fn preview_panel(state: &AppState) -> Element<'_, Message> {
             iced::widget::text_input("tag1, tag2", &state.tags_input)
                 .on_input(Message::TagsDraftChanged)
                 .padding(sp::INPUT_PAD)
+                .style(|t: &Theme, st| theme::input_style(t, st))
                 .width(Length::Fill),
             widgets::icon_button("Apply", Message::ApplyTags),
         ]
@@ -131,6 +135,7 @@ pub fn preview_panel(state: &AppState) -> Element<'_, Message> {
     container(content)
         .width(Length::FillPortion(2))
         .padding(sp::CONTENT_PAD)
+        .style(|t: &Theme| theme::glass_surface(t))
         .into()
 }
 

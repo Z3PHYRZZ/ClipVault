@@ -27,6 +27,6 @@ if errorlevel 1 ( echo [!] ISCC failed & exit /b 1 )
 
 echo.
 echo [OK] Installer ready:
-echo      %ROOT%\installer\Output\ClipVault-0.1.4-Setup.exe
+echo      %ROOT%\installer\Output\ClipVault-0.1.5-Setup.exe
 popd
 endlocal

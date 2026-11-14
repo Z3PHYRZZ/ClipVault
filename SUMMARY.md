@@ -1,19 +1,29 @@
 # ClipVault — Session Summary
 
-## CURRENT STATUS (2026-11-14) — v0.1.4 SHIPPED
-- **v0.1.4 "Organization tools" is live:** commit `38366e6`, tag/Release
-  https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4. v0.1.3 stays stable;
-  all five releases (v0.1.0/1/2/3/4) live. Worktree clean, local == remote.
-- Assets: `ClipVault-0.1.4-Setup.exe` (6,419,671 B, sha256 `f08eb0ea…`) +
-  `clipvault.exe` (14,142,976 B, sha256 `48c043fc…`); both verified byte-for-byte
-  against the GitHub API digests. exe `0.1.4.0`, PE subsystem 2 (no console).
-- Gates: fmt --check / check --all-targets / clippy -D warnings / test all exit 0;
-  **49 tests** (33 unit + 10 db + 1 migration + 5 org); release build + installer;
-  install / run (stays up) / uninstall 0 / True / 0.
-- Scope delivered: tags/labels + tag filter, bulk select + multi-delete + bulk
-  pin/favorite, portable JSON export/import (offline, dedup-safe, 50 MB cap),
-  per-type retention caps, Comfortable/Compact density. Plan in `V014_PLAN.md`.
-- Next: nothing pending. Await the next feature request.
+## CURRENT STATUS (2026-11-14) — v0.1.4 shipped, v0.1.5 frosted theme in progress
+- **v0.1.4 "Organization tools" is live:** commit `ce7a50e`, tag/Release
+  https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4. Assets
+  `ClipVault-0.1.4-Setup.exe` (6,419,671 B, sha256 `f08eb0ea…`) +
+  `clipvault.exe` (14,142,976 B, sha256 `48c043fc…`) verified against GitHub
+  digests. 49 tests, all gates 0, exe `0.1.4.0` subsystem 2.
+- **In progress: v0.1.5 "Frosted glass theme"** — soften/anchor navigation with
+  layered alpha-tinted glass over a static ambient gradient, specular 1px borders,
+  diffused shadows, crisp semi-transparent pills, hover elevation. Frozen spec in
+  `V015_FROSTED_PLAN.md` (documents the honest limitation: no true OS Mica because
+  Iced 0.13 hides the HWND; no CSS `backdrop-filter` in Rust/Iced).
+- Implemented: `contracts.rs` frosted tokens (alpha derivatives of CREAM/INK/WHITE,
+  no new hues), `theme.rs` rewritten (ambient_background gradient, glass panel/card/
+  surface styles, input/pick_list styles, composited button_text for readability),
+  `view.rs` root ambient gradient + panel/glass styles, `preview.rs` input + glass,
+  `search_bar.rs` input/pick_list styles, `settings.rs` input/pick_list styles.
+- Gates currently green: fmt --check / check --all-targets / clippy -D warnings /
+  49 tests. Contrast verified >= 6.28:1 buttons, >= 11.7:1 glass, both themes.
+- Next: rewrite CHANGELOG/RELEASE_NOTES/README/ARCHITECTURE (partly done), full
+  release build + icon + installer, install/run/uninstall, commit + push, create
+  **v0.1.5** GitHub Release with both assets. Version bumped to 0.1.5 everywhere
+  (Cargo.toml/lock/build.rs/Inno/docs); `winres` still `0.1.12`.
+  NOTE: the version-bump sed temporarily corrupted `tracing = "0.1.44"` to
+  `"0.1.54"` (nonexistent crate version) — restored; all other deps verified clean.
 
 **Goal:** Production-quality Windows clipboard manager in Rust (edition 2024) + Iced,
 SQLite, windows-rs. Full requirements in the /goal command; 11 development phases;
@@ -88,7 +98,7 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 **No-console fix (2026-11-13):** Added `#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]` to `src/main.rs`. The release PE is now `SUBSYSTEM=2` (WINDOWS/GUI) instead of `3` (CONSOLE), so no conhost/cmd window spawns. Verified: launched detached with zero child processes, no console. Since a GUI-subsystem process has no stderr, switched `tracing` from the console writer to a file writer (`%LOCALAPPDATA%\ClipVault\clipvault.log` via `Arc<File>` MakeWriter, `.with_ansi(false)`) — diagnostics still work (verified log line written). Rebuilt release exe + installer; installed exe subsystem 2; install/run/uninstall 0/124/0.
 
 **INSTALLER (added 2026-11-13):**
-- `installer\Output\ClipVault-0.1.4-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
+- `installer\Output\ClipVault-0.1.5-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
 - `installer\ClipVault.iss` — per-user (no admin), x64, Win10+, brand wizard icon,
   Start Menu + optional desktop shortcuts, optional HKCU Run startup (unchecked),
   optional post-install launch (unchecked), clean uninstall that PRESERVES
@@ -103,15 +113,15 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 - Repo: **https://github.com/Z3PHYRZZ/ClipVault** (public, default `main`).
 - Local working dir `C:\Users\Dodot\Documents\GitHub\ClipVault` (was `D:\job done\ClipVault`).
 - Releases: **v0.1.0** (first), **v0.1.1** (5-color coolors), **v0.1.2**
-  (pink/mauve), **v0.1.3** (cream/ink), **v0.1.4** (organization tools) — all live with installer + portable exe.
-- **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4
+  (pink/mauve), **v0.1.3** (cream/ink), **v0.1.5** (organization tools) — all live with installer + portable exe.
+- **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.5
   (same tag, re-uploaded 2026-11-13 with the features below)
-  assets `ClipVault-0.1.4-Setup.exe` (6,391,602 B) + `clipvault.exe` (14,037,504 B).
+  assets `ClipVault-0.1.5-Setup.exe` (6,391,602 B) + `clipvault.exe` (14,037,504 B).
 - Docs: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`, `docs/INSTALL.md`,
   `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README badges + docs links.
   `.gitignore` excludes `target/` and `installer/Output/`.
 - All gates re-verified: check 0/0, fmt OK, clippy -D warnings 0, **40 tests**
-  (29 unit + 10 db + 1 v3->v5 migration), release exe `0.1.4.0`
+  (29 unit + 10 db + 1 v3->v5 migration), release exe `0.1.5.0`
   (PE subsystem 2), install/run/uninstall 0/124/0.
 
 **v0.1.3 UI rework (same tag):** Bigger type scale (28/21/16/14/12), roomier

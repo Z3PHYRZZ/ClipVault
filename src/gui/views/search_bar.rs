@@ -2,9 +2,10 @@
 use crate::app::{AppState, Message};
 use crate::domain::{ContentKind, DateRange};
 use crate::gui::spacing as sp;
+use crate::gui::theme;
 use crate::gui::widgets;
 use iced::widget::{pick_list, row, text_input};
-use iced::{Element, Length};
+use iced::{Element, Length, Theme};
 
 /// Kind filter choices rendered in the pick list.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -71,6 +72,7 @@ pub fn search_bar(state: &AppState) -> Element<'_, Message> {
         text_input("Search history...", &state.filter.query)
             .on_input(Message::SearchChanged)
             .padding(sp::INPUT_PAD)
+            .style(|t: &Theme, st| theme::input_style(t, st))
             .width(Length::FillPortion(3)),
         pick_list(
             KindChoice::all().to_vec(),
@@ -78,6 +80,7 @@ pub fn search_bar(state: &AppState) -> Element<'_, Message> {
             |c| Message::FilterKind(c.to_kind()),
         )
         .padding(sp::INPUT_PAD)
+        .style(|t: &Theme, st| theme::pick_list_style(t, st))
         .width(Length::FillPortion(1)),
         pick_list(
             DateRange::all().to_vec(),
@@ -85,6 +88,7 @@ pub fn search_bar(state: &AppState) -> Element<'_, Message> {
             Message::FilterDate,
         )
         .padding(sp::INPUT_PAD)
+        .style(|t: &Theme, st| theme::pick_list_style(t, st))
         .width(Length::FillPortion(1)),
         // Tag filter: union of tags on the currently visible page; "All tags"
         // is the None sentinel. Keeps the picker bounded to what the user sees.
@@ -100,6 +104,7 @@ pub fn search_bar(state: &AppState) -> Element<'_, Message> {
             |sel| Message::FilterTag(if sel == "All tags" { None } else { Some(sel) }),
         )
         .padding(sp::INPUT_PAD)
+        .style(|t: &Theme, st| theme::pick_list_style(t, st))
         .width(Length::FillPortion(1)),
         widgets::quiet_button("Clear", Message::ClearFilters),
     ]

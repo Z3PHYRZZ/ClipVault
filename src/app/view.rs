@@ -62,17 +62,28 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
                     .spacing(sp::GAP_TIGHT)
                     .align_y(iced::Alignment::Center),
                 )
-                .padding(sp::pad(sp::STATUS_PAD)),
+                .padding(sp::pad(sp::STATUS_PAD))
+                .style(|t: &Theme| theme::glass_surface(t)),
             );
         main_col.spacing(sp::GAP_TIGHT).into()
     };
 
-    let base = container(row![
-        container(sidebar).style(|t: &Theme| theme::panel_style(t)),
-        main,
-    ])
+    let base = container(
+        row![
+            container(sidebar).style(|t: &Theme| theme::panel_style(t)),
+            main,
+        ]
+        .spacing(sp::GAP_TIGHT),
+    )
     .width(Length::Fill)
-    .height(Length::Fill);
+    .height(Length::Fill)
+    .padding(sp::SM)
+    // Soft ambient gradient sits BEHIND every frosted layer, giving depth
+    // without a real (unsupported) backdrop blur.
+    .style(|t: &Theme| iced::widget::container::Style {
+        background: Some(theme::ambient_background(t)),
+        ..Default::default()
+    });
 
     // Modal overlays.
     if state.show_delete_selected_confirm {

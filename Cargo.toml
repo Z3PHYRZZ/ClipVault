@@ -1,6 +1,6 @@
 [package]
 name = "clipvault"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2024"
 rust-version = "1.85"
 description = "ClipVault — a calm, private Windows clipboard manager"

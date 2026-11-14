@@ -32,6 +32,86 @@ pub fn alpha(c: Color, a: f32) -> Color {
     }
 }
 
+// ---- Frosted-glass tokens (v0.1.5) ----------------------------------------
+// Iced 0.13 has no compositor backdrop blur. "Frost" is therefore an alpha-tinted
+// CREAM/INK surface layered over a soft ambient gradient, with a 1px specular
+// WHITE hairline and a diffused shadow. All values are alpha variants of the
+// two brand colors + the permitted neutral WHITE; no new hue is introduced.
+/// Deeper frosted tint for sidebar / search bar (deeper = less see-through).
+pub const GLASS_PANEL_LIGHT: Color = Color {
+    r: CREAM.r,
+    g: CREAM.g,
+    b: CREAM.b,
+    a: 0.80,
+};
+pub const GLASS_PANEL_DARK: Color = Color {
+    r: INK.r,
+    g: INK.g,
+    b: INK.b,
+    a: 0.78,
+};
+/// Softer frosted tint for entry cards / preview pane.
+pub const GLASS_CARD_LIGHT: Color = Color {
+    r: CREAM.r,
+    g: CREAM.g,
+    b: CREAM.b,
+    a: 0.66,
+};
+pub const GLASS_CARD_DARK: Color = Color {
+    r: INK.r,
+    g: INK.g,
+    b: INK.b,
+    a: 0.64,
+};
+/// Specular 1px border: soft white highlight in light, faint in dark.
+pub const SPECULAR_LIGHT: Color = Color {
+    r: WHITE.r,
+    g: WHITE.g,
+    b: WHITE.b,
+    a: 0.40,
+};
+pub const SPECULAR_DARK: Color = Color {
+    r: WHITE.r,
+    g: WHITE.g,
+    b: WHITE.b,
+    a: 0.08,
+};
+/// Contrasting hairline that separates overlapping frosted layers.
+pub const HAIRLINE_LIGHT: Color = Color {
+    r: INK.r,
+    g: INK.g,
+    b: INK.b,
+    a: 0.18,
+};
+pub const HAIRLINE_DARK: Color = Color {
+    r: CREAM.r,
+    g: CREAM.g,
+    b: CREAM.b,
+    a: 0.14,
+};
+/// Diffused ambient shadow (0 4px 20px rgba(0,0,0,0.05) equivalent).
+pub const SHADOW_AMBIENT: Color = Color {
+    r: INK.r,
+    g: INK.g,
+    b: INK.b,
+    a: 0.10,
+};
+/// Ambient gradient stops — a subtle luminance shift of the SAME two brand
+/// hues toward the permitted WHITE/CHARCOAL neutrals. No new hue: light stops are
+/// CREAM lifted toward WHITE, dark stops are INK lifted/darkened toward CHARCOAL.
+const fn toward(a: Color, b: Color, t: f32) -> Color {
+    Color {
+        r: a.r + (b.r - a.r) * t,
+        g: a.g + (b.g - a.g) * t,
+        b: a.b + (b.b - a.b) * t,
+        a: 1.0,
+    }
+}
+pub const GRADIENT_LIGHT_TOP: Color = toward(CREAM, WHITE, 0.55);
+pub const GRADIENT_LIGHT_BOTTOM: Color = toward(CREAM, CHARCOAL, 0.10);
+pub const GRADIENT_DARK_TOP: Color = toward(INK, CREAM, 0.10);
+pub const GRADIENT_DARK_BOTTOM: Color = toward(INK, CHARCOAL, 0.35);
+
 // ---- Derived surface tokens (all resolve to the two brand colors) ----------
 pub const CARD: Color = CREAM; // light cream card
 pub const DARK_BG: Color = INK; // ink background
