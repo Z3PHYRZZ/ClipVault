@@ -2,7 +2,7 @@
 use crate::db::DbError;
 use rusqlite::Connection;
 
-pub const LATEST_VERSION: u32 = 4;
+pub const LATEST_VERSION: u32 = 5;
 
 /// Each migration is applied inside its own transaction and bumps user_version.
 const MIGRATIONS: &[&str] = &[
@@ -56,6 +56,12 @@ const MIGRATIONS: &[&str] = &[
     "ALTER TABLE entries ADD COLUMN source_url TEXT;
     CREATE INDEX IF NOT EXISTS ix_entries_source_url ON entries(source_url)
         WHERE source_url IS NOT NULL;",
+    // v5 — organization: free-form tags stored as a JSON array of strings.
+    // A partial index keeps tag-filter lookups cheap without a join table
+    // (fine for a local single-user history). NULL/empty = untagged.
+    "ALTER TABLE entries ADD COLUMN tags_json TEXT;
+    CREATE INDEX IF NOT EXISTS ix_entries_tags ON entries(tags_json)
+        WHERE tags_json IS NOT NULL AND tags_json <> '[]';",
 ];
 
 /// Run all pending migrations, returning the resulting user_version.

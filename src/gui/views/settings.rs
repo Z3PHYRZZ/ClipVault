@@ -39,7 +39,55 @@ pub fn settings_view(state: &AppState) -> Element<'_, Message> {
             text(format!("{}", s.max_age_days)).size(sp::TEXT_LABEL),
         ]
         .spacing(sp::GAP_TIGHT),
+        widgets::label("Per-type caps (0 = use global max). Pinned/favorites are kept."),
+        row![
+            text("Text max").width(Length::Fill),
+            iced::widget::text_input("0", &s.max_entries_text.to_string())
+                .on_input(|v| Message::SetMaxEntriesKind(
+                    crate::domain::ContentKind::Text,
+                    v.parse().unwrap_or(0)
+                ))
+                .padding(sp::INPUT_PAD)
+                .width(110.0),
+            text("Image max").width(Length::FillPortion(1)),
+            iced::widget::text_input("0", &s.max_entries_image.to_string())
+                .on_input(|v| Message::SetMaxEntriesKind(
+                    crate::domain::ContentKind::Image,
+                    v.parse().unwrap_or(0)
+                ))
+                .padding(sp::INPUT_PAD)
+                .width(110.0),
+            text("Files max").width(Length::FillPortion(1)),
+            iced::widget::text_input("0", &s.max_entries_files.to_string())
+                .on_input(|v| Message::SetMaxEntriesKind(
+                    crate::domain::ContentKind::Files,
+                    v.parse().unwrap_or(0)
+                ))
+                .padding(sp::INPUT_PAD)
+                .width(110.0),
+        ]
+        .spacing(sp::GAP_TIGHT)
+        .align_y(iced::Alignment::Center),
         widgets::label("Retention prunes oldest non-pinned, non-favorite entries."),
+        widgets::section_title("APPEARANCE & DATA"),
+        widgets::label("Row density and a portable offline backup of your history."),
+        row![
+            text("List density").width(Length::Fill),
+            pick_list(
+                crate::domain::ListDensity::all().to_vec(),
+                Some(s.list_density),
+                Message::SetListDensity,
+            )
+            .padding(sp::INPUT_PAD),
+        ]
+        .spacing(sp::GAP_TIGHT)
+        .align_y(iced::Alignment::Center),
+        row![
+            widgets::quiet_button("Export history", Message::ExportHistory),
+            widgets::quiet_button("Import history", Message::ImportHistory),
+        ]
+        .spacing(sp::GAP_TIGHT),
+        widgets::label("Backup: %LOCALAPPDATA%\\ClipVault\\clipvault-export.json"),
         Space::with_height(sp::GAP_SECTION),
         widgets::section_title("PRIVACY"),
         widgets::label("Control what ClipVault keeps."),

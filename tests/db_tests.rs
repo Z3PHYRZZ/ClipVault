@@ -58,7 +58,7 @@ fn migration_applies_and_version() {
     let s = store();
     let c = s.conn();
     let version: u32 = ok(c.query_row("PRAGMA user_version", [], |r| r.get(0)));
-    assert_eq!(version, 4, "migrations must land on user_version 4");
+    assert_eq!(version, 5, "migrations must land on user_version 5");
 
     let entries: i64 = ok(c.query_row(
         "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='entries'",

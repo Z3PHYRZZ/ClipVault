@@ -124,14 +124,27 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
                     Task::none()
                 }
                 DbResult::Entry(None) => Task::none(),
+                DbResult::Exported(path) => {
+                    state.status = format!("Exported history to {path}");
+                    Task::none()
+                }
+                DbResult::Imported(n) => {
+                    state.status = format!("Imported {n} entries");
+                    refresh_search(state);
+                    Task::none()
+                }
                 DbResult::Done(what) => {
                     state.status = what.clone();
                     if what == "insert"
                         || what == "delete"
                         || what == "clear"
+                        || what == "tags"
                         || what.starts_with("pruned")
                         || what == "pin"
                         || what == "favorite"
+                        || what.starts_with("deleted ")
+                        || what.starts_with("pinned ")
+                        || what.starts_with("favorited ")
                     {
                         refresh_search(state);
                     }
@@ -216,6 +229,7 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
             state.filter.date = crate::domain::DateRange::All;
             state.filter.pinned_only = false;
             state.filter.favorites_only = false;
+            state.filter.tag = None;
             state.filter.page = 0;
             refresh_search(state);
             Task::none()
@@ -234,6 +248,13 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
         // ---- entry actions ----
         Message::SelectEntry(id) => {
             state.selected = Some(id);
+            // Seed the tag editor draft from the currently displayed row.
+            state.tags_input = state
+                .entries
+                .iter()
+                .find(|e| e.id == id)
+                .map(|e| e.tags().join(", "))
+                .unwrap_or_default();
             let _ = state.db_tx.send(DbCommand::Get(id));
             Task::none()
         }
@@ -268,6 +289,108 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
         }
         Message::RestoreEntry(id) => restore(state, id),
         Message::OpenPreviewInExplorer(_id) => Task::none(),
+
+        // ---- v0.1.4 organization tools ----
+        Message::FilterTag(tag) => {
+            state.filter.tag = tag;
+            state.filter.page = 0;
+            refresh_search(state);
+            Task::none()
+        }
+        Message::SetTags(id, tags) => {
+            let _ = state.db_tx.send(DbCommand::SetTags(id, tags));
+            Task::none()
+        }
+        Message::TagsDraftChanged(s) => {
+            state.tags_input = s;
+            Task::none()
+        }
+        Message::ApplyTags => {
+            if let Some(id) = state.selected {
+                let tags: Vec<String> = state
+                    .tags_input
+                    .split(',')
+                    .map(|t| t.trim().to_string())
+                    .filter(|t| !t.is_empty())
+                    .collect();
+                let _ = state.db_tx.send(DbCommand::SetTags(id, tags));
+            }
+            Task::none()
+        }
+        Message::ToggleSelect(id) => {
+            if !state.selected_ids.remove(&id) {
+                state.selected_ids.insert(id);
+            }
+            Task::none()
+        }
+        Message::SelectAll => {
+            state
+                .selected_ids
+                .extend(state.entries.iter().map(|e| e.id));
+            Task::none()
+        }
+        Message::ClearSelection => {
+            state.selected_ids.clear();
+            state.show_delete_selected_confirm = false;
+            Task::none()
+        }
+        Message::RequestDeleteSelected => {
+            if !state.selected_ids.is_empty() {
+                state.show_delete_selected_confirm = true;
+            }
+            Task::none()
+        }
+        Message::ConfirmDeleteSelected => {
+            state.show_delete_selected_confirm = false;
+            let ids: Vec<i64> = state.selected_ids.drain().collect();
+            state.selected = None;
+            let _ = state.db_tx.send(DbCommand::DeleteMany(ids));
+            Task::none()
+        }
+        Message::PinSelected(v) => {
+            let ids: Vec<i64> = state.selected_ids.iter().copied().collect();
+            if !ids.is_empty() {
+                let _ = state.db_tx.send(DbCommand::SetPinMany(ids, v));
+            }
+            Task::none()
+        }
+        Message::FavoriteSelected(v) => {
+            let ids: Vec<i64> = state.selected_ids.iter().copied().collect();
+            if !ids.is_empty() {
+                let _ = state.db_tx.send(DbCommand::SetFavoriteMany(ids, v));
+            }
+            Task::none()
+        }
+        Message::ExportHistory => {
+            let path = crate::config::data_dir()
+                .join("clipvault-export.json")
+                .to_string_lossy()
+                .into_owned();
+            let _ = state.db_tx.send(DbCommand::ExportAll(path));
+            Task::none()
+        }
+        Message::ImportHistory => {
+            let path = crate::config::data_dir()
+                .join("clipvault-export.json")
+                .to_string_lossy()
+                .into_owned();
+            let _ = state.db_tx.send(DbCommand::ImportAll(path));
+            Task::none()
+        }
+        Message::SetListDensity(d) => {
+            state.settings.list_density = d;
+            let _ = state.settings.save();
+            Task::none()
+        }
+        Message::SetMaxEntriesKind(kind, n) => {
+            match kind {
+                crate::domain::ContentKind::Text => state.settings.max_entries_text = n,
+                crate::domain::ContentKind::Image => state.settings.max_entries_image = n,
+                crate::domain::ContentKind::Files => state.settings.max_entries_files = n,
+            }
+            let _ = state.settings.save();
+            Task::none()
+        }
 
         // ---- paging ----
         Message::LoadMore | Message::NextPage => {
@@ -342,9 +465,15 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
         }
         Message::Quit => quit(state),
         Message::RetentionTick => {
+            let s = &state.settings;
             let _ = state.db_tx.send(DbCommand::Prune {
-                max_entries: state.settings.max_entries,
-                max_age_days: state.settings.max_age_days,
+                max_entries: s.max_entries,
+                max_age_days: s.max_age_days,
+                caps: crate::db::bulk::TypeCaps {
+                    text: s.max_entries_text,
+                    image: s.max_entries_image,
+                    files: s.max_entries_files,
+                },
             });
             Task::none()
         }

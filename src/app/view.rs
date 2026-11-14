@@ -11,35 +11,60 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
     let main: Element<'_, Message> = if state.show_settings {
         crate::gui::views::settings::settings_view(state)
     } else {
-        column![
+        let mut main_col = column![
             container(crate::gui::views::search_bar::search_bar(state))
                 .padding(sp::pad(sp::PANEL_PAD))
                 .style(|t: &Theme| theme::panel_style(t)),
             Space::with_height(sp::GAP_TIGHT),
-            row![
-                container(crate::gui::views::history::history_list(state))
-                    .width(Length::FillPortion(3))
-                    .height(Length::Fill),
-                crate::gui::views::preview::preview_panel(state),
-            ]
-            .spacing(sp::GAP_TIGHT),
-            container(
-                iced::widget::row![
-                    iced::widget::text(&state.status).size(sp::TEXT_CAPTION),
-                    iced::widget::text(format!("{} entries", state.total_count))
-                        .size(sp::TEXT_CAPTION),
-                    iced::widget::Space::with_width(Length::Fill),
-                    crate::gui::widgets::quiet_button("Clear all", Message::RequestClearAll),
-                    crate::gui::widgets::quiet_button("Prev", Message::PrevPage),
-                    crate::gui::widgets::quiet_button("Next", Message::NextPage),
+        ];
+        // Bulk-selection toolbar appears only when rows are checked.
+        if !state.selected_ids.is_empty() {
+            main_col = main_col.push(crate::gui::views::history::selection_toolbar(state));
+            main_col = main_col.push(Space::with_height(sp::GAP_TIGHT));
+        }
+        main_col = main_col
+            .push(
+                row![
+                    container(crate::gui::views::history::history_list(state))
+                        .width(Length::FillPortion(3))
+                        .height(Length::Fill),
+                    crate::gui::views::preview::preview_panel(state),
                 ]
-                .spacing(sp::GAP_TIGHT)
-                .align_y(iced::Alignment::Center)
+                .spacing(sp::GAP_TIGHT),
             )
-            .padding(sp::pad(sp::STATUS_PAD)),
-        ]
-        .spacing(sp::GAP_TIGHT)
-        .into()
+            .push(
+                container(
+                    iced::widget::row![
+                        iced::widget::text(&state.status).size(sp::TEXT_CAPTION),
+                        iced::widget::text(format!("{} entries", state.total_count))
+                            .size(sp::TEXT_CAPTION),
+                        iced::widget::Space::with_width(Length::Fill),
+                        crate::gui::widgets::quiet_button(
+                            if state.settings.list_density == crate::domain::ListDensity::Compact {
+                                "Comfortable"
+                            } else {
+                                "Compact"
+                            },
+                            Message::SetListDensity(
+                                if state.settings.list_density
+                                    == crate::domain::ListDensity::Compact
+                                {
+                                    crate::domain::ListDensity::Comfortable
+                                } else {
+                                    crate::domain::ListDensity::Compact
+                                }
+                            )
+                        ),
+                        crate::gui::widgets::quiet_button("Clear all", Message::RequestClearAll),
+                        crate::gui::widgets::quiet_button("Prev", Message::PrevPage),
+                        crate::gui::widgets::quiet_button("Next", Message::NextPage),
+                    ]
+                    .spacing(sp::GAP_TIGHT)
+                    .align_y(iced::Alignment::Center),
+                )
+                .padding(sp::pad(sp::STATUS_PAD)),
+            );
+        main_col.spacing(sp::GAP_TIGHT).into()
     };
 
     let base = container(row![
@@ -50,6 +75,13 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
     .height(Length::Fill);
 
     // Modal overlays.
+    if state.show_delete_selected_confirm {
+        return iced::widget::stack![
+            base,
+            crate::gui::views::dialogs::confirm_delete_selected(state)
+        ]
+        .into();
+    }
     if state.show_clear_confirm {
         return iced::widget::stack![base, crate::gui::views::dialogs::confirm_clear(state)].into();
     }

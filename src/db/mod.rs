@@ -1,6 +1,8 @@
 //! SQLite storage, migrations, search, and image asset management.
+pub mod bulk;
 pub mod entries;
 pub mod image_assets;
+pub mod io;
 pub mod schema;
 pub mod search;
 pub mod store;

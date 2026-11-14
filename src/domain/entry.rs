@@ -66,10 +66,35 @@ pub struct ClipEntry {
     pub favorite: bool,
     pub source_app: Option<String>,
     pub source_url: Option<String>,
+    pub tags_json: Option<String>,
     pub byte_size: i64,
 }
 
 impl ClipEntry {
+    /// Tags stored as a JSON array string; malformed/empty JSON yields no tags.
+    pub fn tags(&self) -> Vec<String> {
+        self.tags_json
+            .as_deref()
+            .and_then(|s| serde_json::from_str::<Vec<String>>(s).ok())
+            .unwrap_or_default()
+    }
+
+    /// Replace the tag list, normalizing (trim, dedup, sorted) for stability.
+    pub fn set_tags(&mut self, tags: &[String]) {
+        let mut normalized: Vec<String> = tags
+            .iter()
+            .map(|t| t.trim().to_string())
+            .filter(|t| !t.is_empty())
+            .collect();
+        normalized.sort();
+        normalized.dedup();
+        self.tags_json = if normalized.is_empty() {
+            None
+        } else {
+            serde_json::to_string(&normalized).ok()
+        };
+    }
+
     /// Short human-readable text for list rows.
     pub fn display_text(&self) -> String {
         match self.kind {

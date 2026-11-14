@@ -1,5 +1,26 @@
 # ClipVault — Session Summary
 
+## CURRENT STATUS (2026-11-14)
+- **In progress:** v0.1.4 "Organization tools" — new Release tag, v0.1.3 left stable.
+- Scope (decided): tags/labels + tag filter, bulk select + multi-delete + bulk
+  pin/favorite, portable JSON export/import, per-type retention caps, Comfortable/
+  Compact list density. Plan in `V014_PLAN.md`.
+- Implemented & gated: schema **v5** (`tags_json` + index, v4->v5 row-preserving
+  migration test), `src/db/io.rs` (backup JSON + base64, 50 MB cap),
+  `src/db/bulk.rs` (tags CRUD, bulk ops, capped prune, export/import),
+  `src/domain` types (`ClipEntry.tags_json`, `SearchFilter.tag`, `ListDensity`),
+  Settings `#[serde(default)]` new fields, worker bus + db_worker dispatch,
+  Message/state/update wiring, GUI (checkboxes outside mouse_area, selection
+  toolbar, tag chips, tag editor, tag picker, settings controls, density button,
+  delete-selected dialog), 9 new tests.
+- Gates: `cargo check --all-targets`, `clippy -D warnings`, `cargo test`
+  (**49 passed**) all green.
+- Next: full docs already updated (CHANGELOG 0.1.4, RELEASE_NOTES, README,
+  USER_GUIDE, ARCHITECTURE). Remaining: `cargo build --release` + icon + installer,
+  install/run/uninstall smoke, commit + push, create v0.1.4 GitHub Release with
+  both assets. Version already bumped to 0.1.4 in Cargo.toml/Cargo.lock/build.rs/
+  Inno script/docs; `winres` correctly still `0.1.12`.
+
 **Goal:** Production-quality Windows clipboard manager in Rust (edition 2024) + Iced,
 SQLite, windows-rs. Full requirements in the /goal command; 11 development phases;
 workflow wants ~40 subagents orchestrated, compiling/testing after each phase.
@@ -10,7 +31,7 @@ workflow wants ~40 subagents orchestrated, compiling/testing after each phase.
 - Rust installed at `C:\Users\Dodot\.cargo\bin` (bootstrapped this session via winget `Rustlang.Rustup`)
 - MSVC: VS 18 Community — `C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat`, cl/link at `...\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\`
 - Windows SDK: `10.0.26100.0`
-- Brand palette (v0.1.3, two colors only): `#F2E9E4` Cream,
+- Brand palette (v0.1.3 onwards, two colors only): `#F2E9E4` Cream,
   `#22223B` Ink. Neutral white/charcoal for text contrast only.
   History: v0.1.2 pink/mauve, v0.1.1 5-color coolors, v0.1.0 pastel-rose.
 
@@ -73,7 +94,7 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 **No-console fix (2026-11-13):** Added `#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]` to `src/main.rs`. The release PE is now `SUBSYSTEM=2` (WINDOWS/GUI) instead of `3` (CONSOLE), so no conhost/cmd window spawns. Verified: launched detached with zero child processes, no console. Since a GUI-subsystem process has no stderr, switched `tracing` from the console writer to a file writer (`%LOCALAPPDATA%\ClipVault\clipvault.log` via `Arc<File>` MakeWriter, `.with_ansi(false)`) — diagnostics still work (verified log line written). Rebuilt release exe + installer; installed exe subsystem 2; install/run/uninstall 0/124/0.
 
 **INSTALLER (added 2026-11-13):**
-- `installer\Output\ClipVault-0.1.3-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
+- `installer\Output\ClipVault-0.1.4-Setup.exe` — Inno Setup 6.7.3, LZMA2/max.
 - `installer\ClipVault.iss` — per-user (no admin), x64, Win10+, brand wizard icon,
   Start Menu + optional desktop shortcuts, optional HKCU Run startup (unchecked),
   optional post-install launch (unchecked), clean uninstall that PRESERVES
@@ -88,15 +109,15 @@ exe + installer; re-verified install/run/uninstall (0/0/0).
 - Repo: **https://github.com/Z3PHYRZZ/ClipVault** (public, default `main`).
 - Local working dir `C:\Users\Dodot\Documents\GitHub\ClipVault` (was `D:\job done\ClipVault`).
 - Releases: **v0.1.0** (first), **v0.1.1** (5-color coolors), **v0.1.2**
-  (pink/mauve), **v0.1.3** (cream/ink) — all live with installer + portable exe.
-- **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3
+  (pink/mauve), **v0.1.3** (cream/ink), **v0.1.4** (organization tools) — all live with installer + portable exe.
+- **Latest release:** https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4
   (same tag, re-uploaded 2026-11-13 with the features below)
-  assets `ClipVault-0.1.3-Setup.exe` (6,391,602 B) + `clipvault.exe` (14,037,504 B).
+  assets `ClipVault-0.1.4-Setup.exe` (6,391,602 B) + `clipvault.exe` (14,037,504 B).
 - Docs: `CHANGELOG.md`, `CONTRIBUTING.md`, `docs/index.md`, `docs/INSTALL.md`,
   `docs/USER_GUIDE.md`, `docs/RELEASE_NOTES.md`; README badges + docs links.
   `.gitignore` excludes `target/` and `installer/Output/`.
 - All gates re-verified: check 0/0, fmt OK, clippy -D warnings 0, **40 tests**
-  (29 unit + 10 db + 1 v3->v4 migration), release exe `0.1.3.0`
+  (29 unit + 10 db + 1 v3->v5 migration), release exe `0.1.4.0`
   (PE subsystem 2), install/run/uninstall 0/124/0.
 
 **v0.1.3 UI rework (same tag):** Bigger type scale (28/21/16/14/12), roomier

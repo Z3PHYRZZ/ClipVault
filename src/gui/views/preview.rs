@@ -104,6 +104,20 @@ pub fn preview_panel(state: &AppState) -> Element<'_, Message> {
         Space::with_height(sp::GAP_TIGHT),
     ]
     .spacing(sp::GAP_TIGHT);
+    // Tag editor: comma-separated draft, applied to the selected entry.
+    content = content.push(widgets::section_title("TAGS"));
+    content = content.push(
+        iced::widget::row![
+            iced::widget::text_input("tag1, tag2", &state.tags_input)
+                .on_input(Message::TagsDraftChanged)
+                .padding(sp::INPUT_PAD)
+                .width(Length::Fill),
+            widgets::icon_button("Apply", Message::ApplyTags),
+        ]
+        .spacing(sp::GAP_TIGHT)
+        .align_y(iced::Alignment::Center),
+    );
+    content = content.push(Space::with_height(sp::GAP_TIGHT));
     if has_source {
         content = content.push(widgets::section_title("SOURCE"));
         content = content.push(source_lines);

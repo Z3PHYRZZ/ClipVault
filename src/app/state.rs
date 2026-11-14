@@ -48,6 +48,11 @@ pub struct AppState {
     pub entries: Vec<ClipEntry>,
     pub total_count: usize,
     pub selected: Option<i64>,
+    /// v0.1.4 bulk-selection set (row ids checked in the history list).
+    pub selected_ids: std::collections::HashSet<i64>,
+    pub show_delete_selected_confirm: bool,
+    /// Draft comma-separated tags for the currently selected entry (tag editor).
+    pub tags_input: String,
     pub preview_bytes: Option<Vec<u8>>,
     /// Explicit hover state (message-driven hover animation, not just button status).
     pub hovered_card: Option<i64>,

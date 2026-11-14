@@ -85,6 +85,10 @@ pub enum DbResult {
     Entries(Vec<ClipEntry>),
     Entry(Option<ClipEntry>),
     Count(usize),
+    /// Exported JSON bytes + the path written (for the status bar).
+    Exported(String),
+    /// Number of entries processed by an import.
+    Imported(usize),
     Done(String),
     Error(String),
 }
@@ -100,11 +104,21 @@ pub enum DbCommand {
     Get(i64),
     SetPin(i64, bool),
     SetFavorite(i64, bool),
+    SetTags(i64, Vec<String>),
     Delete(i64),
+    /// v0.1.4 organization operations.
+    DeleteMany(Vec<i64>),
+    SetPinMany(Vec<i64>, bool),
+    SetFavoriteMany(Vec<i64>, bool),
+    /// Export everything (or the given filter) to `path` as portable JSON.
+    ExportAll(String),
+    /// Import a portable JSON backup from `path` (dedup-safe).
+    ImportAll(String),
     ClearAll,
     Prune {
         max_entries: usize,
         max_age_days: u32,
+        caps: crate::db::bulk::TypeCaps,
     },
     Shutdown,
 }

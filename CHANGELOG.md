@@ -5,6 +5,40 @@ All notable changes to ClipVault are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-11-14
+
+Organization tools. New GitHub Release tag `v0.1.4`; v0.1.3 stays stable.
+
+### Added
+- **Tags/labels per entry** — free-form comma-separated tags, normalized
+  (trim + dedup + sort), stored as a JSON array in SQLite schema **v5**
+  (`tags_json` column + partial index). Shown as `#tag` chips in history rows,
+  editable in the preview panel, and filterable from the search bar's tag picker.
+- **Bulk select + multi-delete** — per-row checkbox, "Select all" / "Clear",
+  "Delete selected" (confirm dialog), plus "Pin" / "Favorite" for the selection.
+  All bulk ops run in one transaction on the DB worker; `entries_fts` stays in
+  sync via the existing triggers.
+- **Portable JSON export / import** — offline, no cloud. Export writes
+  `%LOCALAPPDATA%\ClipVault\clipvault-export.json` with images inlined as base64;
+  a 50 MB cap prevents OOM on large image histories. Import is dedup-safe by
+  `(kind, content_hash)` and restores tags + pin/favorite flags. New `src/db/io.rs`
+  (own base64 codec, format/version validation) + `src/db/bulk.rs`.
+- **Per-type retention** — `Settings.max_entries_text/image/files` (0 = global
+  cap). `prune_with_caps()` applies the tighter per-type cap after the global
+  age/count prune; pinned and favorite rows remain exempt.
+- **List density toggle** — Comfortable (default) vs Compact row padding, in
+  Settings and a status-bar button; persisted via `#[serde(default)]` so older
+  `settings.json` files load cleanly (all new Settings fields default).
+- 9 new tests (4 `io.rs` unit, 1 `bulk.rs` unit, 5 `tests/org_tests.rs`
+  integration incl. v4->v5 row-preserving migration). **49 tests total.**
+
+### Changed
+- `SearchFilter.tag: Option<String>`; `ClipEntry.tags_json` + `tags()`/`set_tags()`.
+- `DbCommand`/`DbResult` extended for tags, bulk ops, export/import, capped prune;
+  `prune` now flows through `bulk::prune_with_caps`.
+- GUI: history checkbox lives outside the row's `mouse_area` so selection clicks
+  never race `SelectEntry`; selection toolbar appears only when rows are checked.
+
 ## [0.1.3] - 2026-11-13
 
 ### Fixed (post-release audit)
@@ -71,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   token-driven; button text picks contrast per surface.
 - `src/platform/icon.rs` redrawn with only the two colors: Ink rounded square,
   Cream card, Ink header + "V", Cream outline.
-- Version bumped to 0.1.3 in `Cargo.toml`, `build.rs` (FileVersion/ProductVersion),
+- Version bumped to 0.1.4 in `Cargo.toml`, `build.rs` (FileVersion/ProductVersion),
   Inno Setup script, installer filename, and all docs.
 
 ## [0.1.2] - 2026-11-13
@@ -120,7 +154,7 @@ First public release. A complete, private Windows clipboard manager built in Rus
   and favorite rows; orphaned image assets are garbage-collected.
 
 **GUI**
-- Original five-color pastel-rose palette (replaced in 0.1.3): Sage `#D8E2DC`,
+- Original five-color pastel-rose palette (replaced in 0.1.4): Sage `#D8E2DC`,
   Peach `#FFE5D9`, Pastel Pink `#FFCAD4`, Dusty Rose `#F4ACB7`, Muted Mauve `#9D8189`.
 - Light theme (CREAM background, ROSE panels, CREAM cards) and a complementary
   dark theme (deep charcoal, muted rose/sage accents) — not a simple inversion.
@@ -184,6 +218,7 @@ First public release. A complete, private Windows clipboard manager built in Rus
 - `CF_BITMAP` (device-dependent HBITMAP) is intentionally skipped; DIB/DIBV5 are
   preferred. RLE-compressed DIBs are rejected.
 
+[0.1.4]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4
 [0.1.3]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3
 [0.1.2]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.2
 [0.1.1]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.1

@@ -17,8 +17,8 @@ fn main() {
             .set("FileDescription", "ClipVault - private clipboard manager")
             .set("CompanyName", "Manuel")
             .set("LegalCopyright", "MIT")
-            .set("FileVersion", "0.1.3.0")
-            .set("ProductVersion", "0.1.3.0")
+            .set("FileVersion", "0.1.4.0")
+            .set("ProductVersion", "0.1.4.0")
             .set_language(0x0409);
         if let Err(e) = res.compile() {
             println!("cargo:warning=winres skipped: {e}");

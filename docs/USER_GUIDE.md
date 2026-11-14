@@ -38,13 +38,34 @@ with one keystroke. Nothing leaves your machine.
 | Button | What it does |
 |---|---|
 | **Pin / Unpin** | Keeps the entry at the top and exempts it from retention pruning. |
-| **Fav / Unfav** | Marks a favorite (also exempt from pruning). Active state is shown by a ROSE fill and a thicker border. |
+| **Fav / Unfav** | Marks a favorite (also exempt from pruning). Active state is shown by an Ink fill and a thicker border. |
 | **Copy** | Restores that entry to the Windows clipboard so you can paste it anywhere. |
 | **Delete** | Removes just that entry. |
 | **Clear all** | Removes all history except pinned and favorite entries. Asks for confirmation. |
 
 Copies are de-duplicated: copying the same text/image/file list twice does not add
 a second row — it bumps `use_count` and refreshes `last_used_at`.
+
+## Organization tools (v0.1.4)
+
+- **Tags** — select an entry, then type comma-separated tags in the preview panel's
+  TAGS field and click **Apply**. Tags appear as `#tag` chips on the row. Use the
+  tag picker in the search bar to show only entries with a given tag; "All tags"
+  clears it. Tags are trimmed, deduplicated, and stored locally.
+- **Bulk select** — tick the checkbox on any row. A toolbar appears with the count
+  and: **Select all**, **Pin**, **Favorite**, **Delete** (asks for confirmation),
+  and **Clear**. Bulk operations apply to every checked row at once.
+- **Export / import** — in Settings under "APPEARANCE & DATA", use **Export history**
+  to write a portable JSON backup (with images embedded) to
+  `%LOCALAPPDATA%\ClipVault\clipvault-export.json`, and **Import history** to load
+  it back. Import is dedup-safe, so importing the same file twice will not create
+  duplicates. There is no cloud step; the file never leaves your machine unless you
+  copy it yourself. Very large image histories are capped at 50 MB per export.
+- **Per-type retention** — Settings lets you set separate maximum counts for text,
+  images, and files. `0` means "use the global max". Pinned and favorite entries
+  are never pruned.
+- **List density** — switch Comfortable / Compact from Settings or the status-bar
+  button. Compact shows more rows per screen.
 
 ## Keyboard shortcuts
 

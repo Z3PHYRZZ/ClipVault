@@ -27,13 +27,14 @@ fn row_to_entry(r: &rusqlite::Row<'_>) -> rusqlite::Result<ClipEntry> {
         favorite: r.get::<_, i64>("favorite")? != 0,
         source_app: r.get("source_app")?,
         source_url: r.get("source_url")?,
+        tags_json: r.get("tags_json")?,
         byte_size: r.get("byte_size")?,
     })
 }
 
 const SELECT_COLS: &str = "id, kind, content_hash, text_content, image_path, image_w, image_h, \
      file_paths_json, file_meta_json, created_at, last_used_at, use_count, pinned, favorite, \
-     source_app, source_url, byte_size";
+     source_app, source_url, tags_json, byte_size";
 
 /// Insert a captured payload (+ provenance), or bump usage counters on a duplicate.
 /// A UNIQUE(kind, content_hash) index + ON CONFLICT makes this race-safe.

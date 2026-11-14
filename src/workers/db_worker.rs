@@ -1,5 +1,5 @@
 //! The sole owner of the SQLite connection. Runs on its own thread.
-use crate::db::{DbError, entries, image_assets, search, store::Store};
+use crate::db::{DbError, bulk, entries, image_assets, search, store::Store};
 use crate::workers::{DbCommand, DbResult, WorkerEvent};
 
 /// Command loop. `db_rx` receives GUI commands; results are posted to `events_tx`.
@@ -61,6 +61,32 @@ fn execute(conn: &rusqlite::Connection, cmd: &DbCommand) -> Result<DbResult, DbE
             entries::delete(conn, *id)?;
             Ok(DbResult::Done("delete".into()))
         }
+        DbCommand::SetTags(id, tags) => {
+            bulk::set_tags(conn, *id, tags)?;
+            Ok(DbResult::Done("tags".into()))
+        }
+        DbCommand::DeleteMany(ids) => {
+            let n = bulk::delete_many(conn, ids)?;
+            Ok(DbResult::Done(format!("deleted {n}")))
+        }
+        DbCommand::SetPinMany(ids, v) => {
+            let n = bulk::set_pin_many(conn, ids, *v)?;
+            Ok(DbResult::Done(format!("pinned {n}")))
+        }
+        DbCommand::SetFavoriteMany(ids, v) => {
+            let n = bulk::set_favorite_many(conn, ids, *v)?;
+            Ok(DbResult::Done(format!("favorited {n}")))
+        }
+        DbCommand::ExportAll(path) => {
+            let json = bulk::export_json(conn, None)?;
+            std::fs::write(path, json)?;
+            Ok(DbResult::Exported(path.clone()))
+        }
+        DbCommand::ImportAll(path) => {
+            let json = std::fs::read_to_string(path)?;
+            let n = bulk::import_json(conn, &json)?;
+            Ok(DbResult::Imported(n))
+        }
         DbCommand::ClearAll => {
             entries::clear_all(conn)?;
             let _ = image_assets::delete_orphans(conn);
@@ -69,9 +95,9 @@ fn execute(conn: &rusqlite::Connection, cmd: &DbCommand) -> Result<DbResult, DbE
         DbCommand::Prune {
             max_entries,
             max_age_days,
+            caps,
         } => {
-            let n = entries::prune(conn, *max_entries, *max_age_days)?;
-            let _ = image_assets::delete_orphans(conn);
+            let n = bulk::prune_with_caps(conn, *max_entries, *max_age_days, *caps)?;
             Ok(DbResult::Done(format!("pruned {n}")))
         }
         DbCommand::Shutdown => Ok(DbResult::Done("shutdown".into())),

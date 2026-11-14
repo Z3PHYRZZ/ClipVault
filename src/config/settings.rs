@@ -35,10 +35,15 @@ impl std::fmt::Display for ThemeMode {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Settings {
     pub theme: ThemeMode,
     pub max_entries: usize,
     pub max_age_days: u32,
+    /// Per-type caps; 0 = fall back to the global `max_entries`.
+    pub max_entries_text: usize,
+    pub max_entries_image: usize,
+    pub max_entries_files: usize,
     pub pause_monitoring: bool,
     pub clear_on_exit: bool,
     pub start_minimized: bool,
@@ -46,6 +51,7 @@ pub struct Settings {
     pub page_size: usize,
     pub show_hotkey: String,
     pub ignored_apps: Vec<String>,
+    pub list_density: crate::domain::ListDensity,
 }
 
 impl Default for Settings {
@@ -54,6 +60,9 @@ impl Default for Settings {
             theme: ThemeMode::Light,
             max_entries: contracts::DEFAULT_MAX_ENTRIES,
             max_age_days: contracts::DEFAULT_MAX_AGE_DAYS,
+            max_entries_text: 0,
+            max_entries_image: 0,
+            max_entries_files: 0,
             pause_monitoring: false,
             clear_on_exit: false,
             start_minimized: false,
@@ -61,6 +70,7 @@ impl Default for Settings {
             page_size: contracts::DEFAULT_PAGE_SIZE,
             show_hotkey: "Ctrl+Shift+V".to_string(),
             ignored_apps: Vec::new(),
+            list_density: crate::domain::ListDensity::default(),
         }
     }
 }

@@ -5,7 +5,7 @@ use rusqlite::Connection;
 
 const SELECT_COLS: &str = "e.id, e.kind, e.content_hash, e.text_content, e.image_path, e.image_w, \
      e.image_h, e.file_paths_json, e.file_meta_json, e.created_at, e.last_used_at, \
-     e.use_count, e.pinned, e.favorite, e.source_app, e.source_url, e.byte_size";
+     e.use_count, e.pinned, e.favorite, e.source_app, e.source_url, e.tags_json, e.byte_size";
 
 fn row_to_entry(r: &rusqlite::Row<'_>) -> rusqlite::Result<ClipEntry> {
     let kind_s: String = r.get(1)?;
@@ -26,7 +26,8 @@ fn row_to_entry(r: &rusqlite::Row<'_>) -> rusqlite::Result<ClipEntry> {
         favorite: r.get::<_, i64>(13)? != 0,
         source_app: r.get(14)?,
         source_url: r.get(15)?,
-        byte_size: r.get(16)?,
+        tags_json: r.get(16)?,
+        byte_size: r.get(17)?,
     })
 }
 
@@ -48,6 +49,15 @@ pub fn build_where(f: &SearchFilter) -> (String, Vec<rusqlite::types::Value>) {
     }
     if f.favorites_only {
         clauses.push("e.favorite = 1".into());
+    }
+    if let Some(tag) = f.tag.as_deref() {
+        if !tag.trim().is_empty() {
+            // tags_json is a JSON array of strings; match the quoted tag exactly
+            // so "work" does not match "workflow". Case-sensitive JSON comparison.
+            let needle = format!("\"{}\"", tag.trim().replace('"', "\"\""));
+            clauses.push("COALESCE(e.tags_json, '') LIKE ?".into());
+            vals.push(format!("%{needle}%").into());
+        }
     }
     let q = f.query.trim();
     if !q.is_empty() {

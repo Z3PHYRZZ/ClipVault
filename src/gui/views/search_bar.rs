@@ -56,6 +56,16 @@ impl std::fmt::Display for KindChoice {
     }
 }
 
+/// "All tags" plus every distinct tag on the current page (sorted, deduped).
+fn tag_choices(state: &AppState) -> Vec<String> {
+    let mut tags: Vec<String> = state.entries.iter().flat_map(|e| e.tags()).collect();
+    tags.sort();
+    tags.dedup();
+    let mut choices = vec!["All tags".to_string()];
+    choices.extend(tags);
+    choices
+}
+
 pub fn search_bar(state: &AppState) -> Element<'_, Message> {
     row![
         text_input("Search history...", &state.filter.query)
@@ -73,6 +83,21 @@ pub fn search_bar(state: &AppState) -> Element<'_, Message> {
             DateRange::all().to_vec(),
             Some(state.filter.date),
             Message::FilterDate,
+        )
+        .padding(sp::INPUT_PAD)
+        .width(Length::FillPortion(1)),
+        // Tag filter: union of tags on the currently visible page; "All tags"
+        // is the None sentinel. Keeps the picker bounded to what the user sees.
+        pick_list(
+            tag_choices(state),
+            Some(
+                state
+                    .filter
+                    .tag
+                    .clone()
+                    .unwrap_or_else(|| "All tags".into())
+            ),
+            |sel| Message::FilterTag(if sel == "All tags" { None } else { Some(sel) }),
         )
         .padding(sp::INPUT_PAD)
         .width(Length::FillPortion(1)),

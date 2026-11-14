@@ -1,6 +1,6 @@
 //! The single message enum. Frozen — all GUI/worker events flow through here.
 use crate::config::ThemeMode;
-use crate::domain::{ContentKind, DateRange, ShortcutAction};
+use crate::domain::{ContentKind, DateRange, ListDensity, ShortcutAction};
 
 // The single GUI message enum intentionally mixes tiny events with boxed worker
 // events; boxing the worker variant already keeps the common path small.
@@ -33,6 +33,22 @@ pub enum Message {
     CancelClearAll,
     RestoreEntry(i64),
     OpenPreviewInExplorer(i64),
+    /// v0.1.4 organization tools.
+    SetTags(i64, Vec<String>),
+    TagsDraftChanged(String),
+    ApplyTags,
+    FilterTag(Option<String>),
+    ToggleSelect(i64),
+    SelectAll,
+    ClearSelection,
+    RequestDeleteSelected,
+    ConfirmDeleteSelected,
+    PinSelected(bool),
+    FavoriteSelected(bool),
+    ExportHistory,
+    ImportHistory,
+    SetListDensity(ListDensity),
+    SetMaxEntriesKind(ContentKind, usize),
     /// Paging.
     LoadMore,
     NextPage,

@@ -1,4 +1,4 @@
-//! Migration test: an existing v3 database must upgrade to v4 without data loss.
+//! Migration test: an existing v3 database must upgrade to v5 without data loss.
 use clipvault::db::store::Store;
 use rusqlite::Connection;
 
@@ -10,7 +10,7 @@ fn ok<T, E: std::fmt::Display>(r: Result<T, E>) -> T {
 }
 
 #[test]
-fn v3_database_upgrades_to_v4_preserving_rows() {
+fn v3_database_upgrades_to_v5_preserving_rows() {
     // Build a v3-shaped DB (source_url column absent, user_version = 3) with a
     // legacy row, then run the real migration runner through Store::open.
     let dir = std::env::temp_dir().join(format!("clipvault_mig_{}", std::process::id()));
@@ -37,7 +37,7 @@ fn v3_database_upgrades_to_v4_preserving_rows() {
     let version: u32 = ok(store
         .conn()
         .query_row("PRAGMA user_version", [], |r| r.get(0)));
-    assert_eq!(version, 4, "migration must land on user_version 4");
+    assert_eq!(version, 5, "migration must land on user_version 5");
 
     let cols: String = ok(store.conn().query_row(
         "SELECT GROUP_CONCAT(name) FROM pragma_table_info('entries')",
@@ -45,6 +45,7 @@ fn v3_database_upgrades_to_v4_preserving_rows() {
         |r| r.get(0),
     ));
     assert!(cols.contains("source_url"), "v4 must add source_url column");
+    assert!(cols.contains("tags_json"), "v5 must add tags_json column");
 
     let n: i64 = ok(store
         .conn()

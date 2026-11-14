@@ -13,7 +13,7 @@ them at hand. **No network, no telemetry, no accounts, no console window.** Buil
 with Rust (edition 2024), Iced 0.13, rusqlite (bundled SQLite + FTS5), and windows-rs.
 
 **Download:** [latest Release](https://github.com/Z3PHYRZZ/ClipVault/releases/latest) —
-grab `ClipVault-0.1.3-Setup.exe` and double-click it. Full docs in [`docs/`](docs/index.md).
+grab `ClipVault-0.1.4-Setup.exe` and double-click it. Full docs in [`docs/`](docs/index.md).
 
 | | |
 |---|---|
@@ -27,11 +27,15 @@ grab `ClipVault-0.1.3-Setup.exe` and double-click it. Full docs in [`docs/`](doc
   and file drop lists (`CF_HDROP`), captured from an event-driven listener. No polling.
 - **Duplicate detection** — SHA-256 content hashes with a `UNIQUE(kind, hash)` index;
   repeats bump `use_count` instead of creating new rows (race-safe `ON CONFLICT` upsert).
-- **Search & filters** — FTS5 full-text plus type / date / pinned / favorite filters,
-  paged history. LIKE fallback for substrings and CJK.
+- **Search & filters** — FTS5 full-text plus type / date / pinned / favorite / tag
+  filters, paged history. LIKE fallback for substrings and CJK.
 - **Actions** — pin, favorite, delete, clear-all (confirm dialog), restore-to-clipboard.
+- **Organization (v0.1.4)** — tags/labels per entry with a tag filter, bulk select
+  + multi-delete + bulk pin/favorite, portable JSON export/import (offline,
+  dedup-safe, images inlined), per-type retention caps, and a Comfortable/Compact
+  list density toggle.
 - **Global shortcuts** — configurable show/hide combo plus `Ctrl+Shift+1..9` quick-paste.
-- **Persistence** — versioned SQLite schema (migrations v1→v3), WAL, transactions,
+- **Persistence** — versioned SQLite schema (migrations v1→v5), WAL, transactions,
   configurable retention pruning, image assets in an app-managed directory.
 - **Preview** — text, photo (thumbnail in the history list + full 300px preview
   with dimensions), and file metadata (size, exists).
@@ -46,7 +50,7 @@ grab `ClipVault-0.1.3-Setup.exe` and double-click it. Full docs in [`docs/`](doc
   readable 16px body type, larger button hit areas, and message-driven hover
   animation (shadow lift + border on cards and nav items).
 
-## Brand palette (v0.1.3 — official, two colors only)
+## Brand palette (v0.1.4 — official, two colors only)
 
 | Role | Hex | Use |
 |---|---|---|
@@ -60,7 +64,7 @@ white/charcoal permitted only for readability.
 
 ## Install (recommended)
 
-Double-click **`installer\Output\ClipVault-0.1.3-Setup.exe`**. Per-user install
+Double-click **`installer\Output\ClipVault-0.1.4-Setup.exe`**. Per-user install
 (no admin rights), Start Menu + optional desktop shortcut, optional launch at
 startup, clean uninstall that keeps your clipboard history. Full installer docs
 in `PACKAGING.md`. Rebuild the installer with `installer\build-installer.bat`.

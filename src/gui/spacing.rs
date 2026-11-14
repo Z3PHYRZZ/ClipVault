@@ -56,6 +56,8 @@ pub const CONTENT_PAD: u16 = XXL; // 32
 pub const EMPTY_PAD: u16 = XXL; // 32
 /// History row card.
 pub const ROW_PAD: [u16; 2] = [MD, LG]; // [12, 16]
+/// Compact density history row (less vertical padding).
+pub const ROW_PAD_COMPACT: [u16; 2] = [XS, MD]; // [4, 12]
 /// List container gutter.
 pub const LIST_PAD: u16 = SM; // 8
 /// Status bar.

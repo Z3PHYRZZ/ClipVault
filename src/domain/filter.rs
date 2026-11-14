@@ -55,6 +55,8 @@ pub struct SearchFilter {
     pub date: DateRange,
     pub pinned_only: bool,
     pub favorites_only: bool,
+    /// When set, only entries whose `tags_json` contains this exact tag pass.
+    pub tag: Option<String>,
     pub page: usize,
     pub page_size: usize,
 }
@@ -67,9 +69,36 @@ impl Default for SearchFilter {
             date: DateRange::All,
             pinned_only: false,
             favorites_only: false,
+            tag: None,
             page: 0,
             page_size: crate::contracts::DEFAULT_PAGE_SIZE,
         }
+    }
+}
+
+/// Row-density preference for the history list (persisted in Settings).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum ListDensity {
+    #[default]
+    Comfortable,
+    Compact,
+}
+
+impl ListDensity {
+    pub fn label(self) -> &'static str {
+        match self {
+            ListDensity::Comfortable => "Comfortable",
+            ListDensity::Compact => "Compact",
+        }
+    }
+    pub fn all() -> &'static [ListDensity] {
+        &[ListDensity::Comfortable, ListDensity::Compact]
+    }
+}
+
+impl std::fmt::Display for ListDensity {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.label())
     }
 }
 

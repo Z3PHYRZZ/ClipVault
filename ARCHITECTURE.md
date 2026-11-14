@@ -191,14 +191,18 @@ These are documented because they dictate the design and must not be silently sk
   file_meta TEXT, file_paths TEXT, created_at INTEGER NOT NULL,
   last_used_at INTEGER NOT NULL, use_count INTEGER NOT NULL DEFAULT 1,
   pinned INTEGER NOT NULL DEFAULT 0, favorite INTEGER NOT NULL DEFAULT 0,
-  source_app TEXT, source_url TEXT, byte_size INTEGER NOT NULL)`.
+  source_app TEXT, source_url TEXT, tags_json TEXT, byte_size INTEGER NOT NULL)`.
 - Migration **v4** adds `source_url` (`ALTER TABLE ... ADD COLUMN`) with a partial
   index; `source_app` has existed since v1. Both hold best-effort copy provenance
   captured from the clipboard owner process / browser `CF_HTML` `SourceURL:` header.
+- Migration **v5** (v0.1.4) adds `tags_json` (JSON array of strings) with a partial
+  index; `src/db/bulk.rs` holds tag CRUD, bulk delete/pin/favorite, per-type
+  retention, and portable JSON export/import (`src/db/io.rs`, own base64 codec,
+  50 MB cap). Import goes through `insert_dedup` so `(kind, content_hash)` dedup holds.
 - Indexes: `content_hash` (dedup, UNIQUE-ish with kind), `created_at DESC`,
-  `kind`, `pinned`, `favorite`. FTS5 virtual table `entries_fts(text_content,
+  `kind`, `pinned`, `favorite`, `tags_json`. FTS5 virtual table `entries_fts(text_content,
   file_paths, content='entries')` kept in sync by triggers for fast substring/token
-  search; LIKE fallback for CJK/prefix queries.
+  search; LIKE fallback for CJK/prefix queries and exact tag matching.
 - **Duplicate detection:** hash = sha256 over canonical bytes (UTF-8 text,
   original DIB bytes for images, normalized sorted path list for files). An existing
   row with the same `(kind, content_hash)` and `use_count` bump + `last_used_at`
