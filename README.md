@@ -13,7 +13,7 @@ them at hand. **No network, no telemetry, no accounts, no console window.** Buil
 with Rust (edition 2024), Iced 0.13, rusqlite (bundled SQLite + FTS5), and windows-rs.
 
 **Download:** [latest Release](https://github.com/Z3PHYRZZ/ClipVault/releases/latest) —
-grab `ClipVault-0.1.5-Setup.exe` and double-click it. Full docs in [`docs/`](docs/index.md).
+grab `ClipVault-0.1.6-Setup.exe` and double-click it. Full docs in [`docs/`](docs/index.md).
 
 | | |
 |---|---|
@@ -46,12 +46,13 @@ grab `ClipVault-0.1.5-Setup.exe` and double-click it. Full docs in [`docs/`](doc
   start minimized, graceful shutdown with WAL checkpoint.
 - **Privacy** — pause monitoring, clear-on-exit, ignored apps, local-only storage.
 - **Polished GUI** — exact two-color brand palette, light + complementary
-  dark themes, frosted-glass surfaces over a soft ambient gradient (v0.1.5),
+  dark themes, real Windows acrylic/Mica translucency with frosted-glass
+  surfaces and a soft ambient-gradient fallback (v0.1.6),
   rounded cards, specular 1px borders, diffused shadows, empty states,
   readable 16px body type, larger button hit areas, and message-driven hover
   animation (shadow lift + border on cards and nav items).
 
-## Brand palette (v0.1.5 — official, two colors only)
+## Brand palette (v0.1.6 — official, two colors only)
 
 | Role | Hex | Use |
 |---|---|---|
@@ -65,7 +66,7 @@ white/charcoal permitted only for readability.
 
 ## Install (recommended)
 
-Double-click **`installer\Output\ClipVault-0.1.5-Setup.exe`**. Per-user install
+Double-click **`installer\Output\ClipVault-0.1.6-Setup.exe`**. Per-user install
 (no admin rights), Start Menu + optional desktop shortcut, optional launch at
 startup, clean uninstall that keeps your clipboard history. Full installer docs
 in `PACKAGING.md`. Rebuild the installer with `installer\build-installer.bat`.

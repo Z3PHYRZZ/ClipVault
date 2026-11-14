@@ -1,5 +1,10 @@
 # ClipVault v0.1.5 — Frosted glass theme (design translation)
 
+> **CORRECTION (v0.1.6):** the "Iced hides the HWND" claim below was wrong.
+> `iced::window::run_with_handle` DOES expose the raw window handle; v0.1.6 now
+> applies real DWM Mica / acrylic translucency. See `V016_ACRYLIC_PLAN.md`.
+> This file remains as the historical v0.1.5 record.
+
 User spec is CSS-flavored (`backdrop-filter`, `rgba()`, `translateY`). ClipVault is
 Rust / Iced 0.13 — no DOM, no CSS, no compositor blur exposed to widgets. This doc
 records the faithful translation into Iced primitives and the ONE limitation.

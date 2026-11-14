@@ -59,6 +59,8 @@ pub struct AppState {
     pub hovered_nav: Option<u8>,
     /// Whether the main window is currently minimized (global show/hide hotkey).
     pub window_hidden: bool,
+    /// Which native backdrop effect is active (None = software gradient fallback).
+    pub backdrop: crate::platform::backdrop::BackdropKind,
     pub show_settings: bool,
     pub show_clear_confirm: bool,
     pub show_about: bool,

@@ -29,7 +29,9 @@ fn subscription(state: &AppState) -> iced::Subscription<Message> {
 /// initial Search, so no extra command is needed here.
 fn initialize() -> (AppState, Task<Message>) {
     match AppState::new() {
-        Ok(state) => (state, Task::none()),
+        // The window exists by the first update pass; fire the native backdrop
+        // application then (not here, where get_oldest() would return None).
+        Ok(state) => (state, Task::done(Message::ApplyBackdrop)),
         Err(e) => {
             tracing::error!("worker init failed: {e}");
             // Fall back to a state whose workers are inert but the GUI still
@@ -51,6 +53,7 @@ fn initialize() -> (AppState, Task<Message>) {
                     hovered_card: None,
                     hovered_nav: None,
                     window_hidden: false,
+                    backdrop: clipvault::platform::backdrop::BackdropKind::default(),
                     show_settings: false,
                     show_clear_confirm: false,
                     show_about: false,
@@ -123,6 +126,9 @@ pub fn main() -> iced::Result {
         .window(iced::window::Settings {
             size: Size::new(1100.0, 720.0),
             min_size: Some(Size::new(820.0, 560.0)),
+            // Required for DWM acrylic/Mica: winit forwards this via
+            // .with_transparent(...) so the desktop shows through the root.
+            transparent: true,
             ..Default::default()
         })
         .run_with(initialize)

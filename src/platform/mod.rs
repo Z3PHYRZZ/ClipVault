@@ -1,4 +1,5 @@
 //! Platform integration. All `windows-rs` usage is cfg-gated and lives here.
+pub mod backdrop;
 pub mod clipboard;
 pub mod clipboard_ext;
 pub mod dib;

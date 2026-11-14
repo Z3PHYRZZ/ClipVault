@@ -33,35 +33,39 @@ pub fn alpha(c: Color, a: f32) -> Color {
 }
 
 // ---- Frosted-glass tokens (v0.1.5) ----------------------------------------
-// Iced 0.13 has no compositor backdrop blur. "Frost" is therefore an alpha-tinted
-// CREAM/INK surface layered over a soft ambient gradient, with a 1px specular
-// WHITE hairline and a diffused shadow. All values are alpha variants of the
+// v0.1.6: the OS-level blur itself comes from DWM Mica/acrylic applied to the
+// native HWND (see src/platform/backdrop.rs); these alpha-tinted surfaces sit on
+// top of that real backdrop, not a simulated one. Chrome is near-clear, content
+// cards stay near-opaque for readability. All values are alpha variants of the
 // two brand colors + the permitted neutral WHITE; no new hue is introduced.
-/// Deeper frosted tint for sidebar / search bar (deeper = less see-through).
+/// Chrome glass (sidebar / search bar / toolbar / status): near-clear so the
+/// natively blurred desktop reads through. Still tinted with the brand hue.
 pub const GLASS_PANEL_LIGHT: Color = Color {
     r: CREAM.r,
     g: CREAM.g,
     b: CREAM.b,
-    a: 0.80,
+    a: 0.42,
 };
 pub const GLASS_PANEL_DARK: Color = Color {
     r: INK.r,
     g: INK.g,
     b: INK.b,
-    a: 0.78,
+    a: 0.40,
 };
-/// Softer frosted tint for entry cards / preview pane.
+/// Content scrim (entry cards / preview pane): kept near-opaque on purpose.
+/// Full acrylic applies to the window chrome, never to text-bearing surfaces —
+/// this is what guarantees readability regardless of the desktop behind it.
 pub const GLASS_CARD_LIGHT: Color = Color {
     r: CREAM.r,
     g: CREAM.g,
     b: CREAM.b,
-    a: 0.66,
+    a: 0.94,
 };
 pub const GLASS_CARD_DARK: Color = Color {
     r: INK.r,
     g: INK.g,
     b: INK.b,
-    a: 0.64,
+    a: 0.93,
 };
 /// Specular 1px border: soft white highlight in light, faint in dark.
 pub const SPECULAR_LIGHT: Color = Color {

@@ -1,28 +1,39 @@
 # ClipVault — Session Summary
 
-## CURRENT STATUS (2026-11-14) — v0.1.5 SHIPPED
-- **v0.1.5 "Frosted glass theme" is live:** commit `5a7c6cb`, Release
+## CURRENT STATUS (2026-11-14) — v0.1.5 shipped, v0.1.6 native acrylic IN PROGRESS
+- **v0.1.5 "Frosted glass theme" is live:** commit `93cf05a`, Release
   https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.5. All six releases
-  (v0.1.0/1/2/3/4/5) live. Worktree clean, local == remote.
-- Assets: `ClipVault-0.1.5-Setup.exe` (6,424,443 B, sha256 `db729da8…`) +
-  `clipvault.exe` (14,161,408 B, sha256 `26389981…`); both verified byte-for-byte
-  against GitHub API digests. exe `0.1.5.0`, PE subsystem 2 (no console).
-- Gates: fmt --check / check --all-targets / clippy -D warnings / test all exit 0;
-  **49 tests**; release build + installer; install / run (stays up) / uninstall
-  0 / True / 0.
-- Delivered: layered alpha-tinted frosted glass (deeper panels ~0.8, softer cards
-  ~0.65) over a static 3-stop ambient gradient, 1px specular WHITE borders
-  (0.40 light / 0.08 dark), diffused shadows (20/14px), crisp semi-transparent
-  pills for buttons/inputs/dropdowns, hover shadow lift + border emphasis, and
-  composited button_text() for readability (>= 6.28:1 buttons, >= 11.7:1 glass,
-  both themes). No compositor blur, no animated blur -> smooth scroll/resize.
-- Honest limitation documented (V015_FROSTED_PLAN.md + RELEASE_NOTES): no true
-  OS Mica/Acrylic — Iced 0.13 hides the HWND; `DwmSetWindowAttribute` would need
-  a framework patch or fragile `FindWindowW`. Mica is Win11-only. Gradient +
-  layered alpha surfaces are the framework-supported approximation.
-- Note: version-bump sed briefly corrupted `tracing = "0.1.44"` -> `"0.1.54"`
-  (nonexistent version); restored, all deps verified clean.
-- Next: nothing pending. Await the next feature request.
+  (v0.1.0/1/2/3/4/5) live; v0.1.6 will be the seventh.
+- **In progress: v0.1.6 "Real frosted glass / native acrylic"** — the user asked
+  whether real blur is possible and chose **Full acrylic translucency**. Research
+  OVERTURNED the v0.1.5 "Iced hides HWND" claim: `iced::window::run_with_handle`
+  (`iced_runtime-0.13.2/src/window.rs:398`, re-exported by iced) hands the app
+  `raw_window_handle::WindowHandle` -> `Win32WindowHandle.hwnd`. Plan in
+  `V016_ACRYLIC_PLAN.md` (approved via ExitPlanMode).
+- Implemented: `src/platform/backdrop.rs` (Mica via DwmSetWindowAttribute, acrylic
+  via GetProcAddress+SetWindowCompositionAttribute, blur-behind fallback, graceful
+  None, cfg-gated, BackdropKind + 3 unit tests), `pub mod backdrop` in platform/mod.rs,
+  `raw-window-handle = "0.6.2"` + `Win32_Graphics_Dwm` feature in Cargo.toml,
+  `transparent: true` in main.rs window settings, `Message::{ApplyBackdrop,
+  BackdropApplied}`, `AppState.backdrop` in 3 constructors, `backdrop_task()` in
+  update.rs (get_oldest -> run_with_handle -> map), `initialize()` fires
+  ApplyBackdrop, SetTheme re-applies dark mode, view.rs root transparent when
+  native else gradient fallback, contracts.rs chrome alpha ~0.40 (near-clear) and
+  content scrim ~0.94 (opaque), theme.rs button_text deterministic for translucent
+  pills. Docs: CHANGELOG [0.1.6], RELEASE_NOTES, README, ARCHITECTURE (corrected
+  HWND claim), V015_FROSTED_PLAN.md correction banner.
+- **BLOCKED:** the shared classifier endpoint (`rootsys/hy4free[1m]`) is timing
+  out on all cargo/build commands this window — documented in AI-Brain
+  `Learnings/classifier-timeout-root-cause.md`. `cargo check` has NOT run since
+  these edits; code is written but UNVERIFIED. No commit/push/release yet.
+- **Next (when classifier recovers):** cargo fmt --check, check --all-targets,
+  clippy -D warnings, test (expect 52), build --release; icon + installer;
+  install/run/uninstall; visual smoke on Windows 11 desktop (confirm blur visible
+  behind chrome, text crisp, Light/Dark re-apply, resize/scroll smooth);
+  commit + push + create v0.1.6 Release with both assets + verify digests.
+  Version bumped to 0.1.6 in Cargo.toml/build.rs/Inno/docs; `winres` still
+  `0.1.12`, `tracing` still `0.1.44` (targeted replacements avoided the earlier
+  sed corruption).
 
 **Goal:** Production-quality Windows clipboard manager in Rust (edition 2024) + Iced,
 SQLite, windows-rs. Full requirements in the /goal command; 11 development phases;

@@ -1,10 +1,11 @@
-//! Frosted-glass theme (v0.1.5).
+//! Frosted-glass theme (v0.1.5, native blur added v0.1.6).
 //!
 //! CREAM #F2E9E4 and INK #22223B are the only chromatic colors; WHITE/CHARCOAL
-//! are permitted neutrals. Iced 0.13 has no compositor backdrop blur, so "frost"
-//! is an alpha-tinted glass surface layered over a soft ambient gradient, with a
-//! 1px specular hairline and a diffused shadow. No animated blur: hover changes
-//! only color / border / shadow offset, keeping scrolling and resize smooth.
+//! are permitted neutrals. v0.1.6 applies the real blur at the OS level (DWM
+//! Mica/acrylic via `src/platform/backdrop.rs`); these alpha-tinted surfaces sit
+//! on top of that translucent window, not a simulated gradient. No animated blur:
+//! hover changes only color / border / shadow offset, keeping scrolling and
+//! window resize smooth.
 use crate::config::ThemeMode;
 use crate::contracts::*;
 use crate::domain::ContentKind;
@@ -197,22 +198,13 @@ fn button_color(status: button::Status, primary: bool, theme: &Theme) -> Color {
 }
 
 fn button_text(bg: Color, theme: &Theme) -> Color {
-    // Composite the semi-transparent pill over the ambient base before judging
-    // luminance, otherwise a light pill on a dark background would wrongly get
-    // dark text.
-    let base = if is_dark(theme) {
-        GRADIENT_DARK_TOP
-    } else {
-        GRADIENT_LIGHT_TOP
-    };
-    let a = bg.a;
-    let eff = Color {
-        r: bg.r * a + base.r * (1.0 - a),
-        g: bg.g * a + base.g * (1.0 - a),
-        b: bg.b * a + base.b * (1.0 - a),
-        a: 1.0,
-    };
-    let l = 0.2126 * eff.r + 0.7152 * eff.g + 0.0722 * eff.b;
+    // With a transparent root the true backdrop is unknown (any wallpaper), so
+    // luminance guessing is unreliable. Transparent pills use the deterministic
+    // theme foreground; opaque pills use luminance. Either way text stays crisp.
+    if bg.a < 0.85 {
+        return readable_text(theme);
+    }
+    let l = 0.2126 * bg.r + 0.7152 * bg.g + 0.0722 * bg.b;
     if l < 0.5 { CREAM } else { INK }
 }
 

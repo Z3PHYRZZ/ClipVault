@@ -41,8 +41,8 @@ fn main() {
        .set("FileDescription", "ClipVault — private clipboard manager")
        .set("CompanyName", "Manuel")
        .set("LegalCopyright", "MIT")
-       .set("FileVersion", "0.1.5.0")
-       .set("ProductVersion", "0.1.5.0");
+       .set("FileVersion", "0.1.6.0")
+       .set("ProductVersion", "0.1.6.0");
     if let Err(e) = res.compile() {
         // Non-fatal on non-MSVC hosts; the app still builds.
         println!("cargo:warning=winres skipped: {e}");
@@ -63,7 +63,7 @@ is generated at runtime, so this is graceful, not fatal.
 ## 3. Distribution options
 
 ### A. Standalone installer (RECOMMENDED — double-click to install)
-**Delivered artifact:** `installer\Output\ClipVault-0.1.5-Setup.exe` (6.4 MB,
+**Delivered artifact:** `installer\Output\ClipVault-0.1.6-Setup.exe` (6.4 MB,
 LZMA2-compressed, Inno Setup 6). Double-click it to install.
 
 Rebuild from source:
@@ -96,12 +96,12 @@ Installer behavior (verified end-to-end with a silent install + uninstall):
 
 Silent install for testing:
 ```
-ClipVault-0.1.5-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR=<path>
+ClipVault-0.1.6-Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CURRENTUSER /DIR=<path>
 ```
 
 ### B. Portable zip (zero-install)
 ```
-ClipVault-0.1.5/
+ClipVault-0.1.6/
   clipvault.exe
   README.md
   LICENSE

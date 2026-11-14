@@ -11,6 +11,35 @@ fn refresh_search(state: &AppState) {
     let _ = state.db_tx.send(DbCommand::Search(state.filter.clone()));
 }
 
+/// Native Windows backdrop (v0.1.6). Resolves the primary window id, then runs
+/// a `Send + 'static` closure with its raw HWND. The DWM call happens inside
+/// that closure; the resulting `BackdropKind` is mapped back into a Message so
+/// `AppState` can record it and `view()` can pick transparent vs gradient root.
+fn backdrop_task(dark: bool) -> Task<Message> {
+    iced::window::get_oldest()
+        .then(move |maybe_id| match maybe_id {
+            Some(id) => iced::window::run_with_handle(id, move |handle| {
+                use raw_window_handle::RawWindowHandle;
+                let hwnd = match handle.as_raw() {
+                    RawWindowHandle::Win32(w) => w.hwnd.get(),
+                    _ => 0,
+                };
+                if hwnd == 0 {
+                    return crate::platform::backdrop::BackdropKind::None;
+                }
+                match crate::platform::backdrop::apply(hwnd, dark) {
+                    Ok(kind) => kind,
+                    Err(e) => {
+                        tracing::warn!("native backdrop unavailable: {e}");
+                        crate::platform::backdrop::BackdropKind::None
+                    }
+                }
+            }),
+            None => Task::none(),
+        })
+        .map(Message::BackdropApplied)
+}
+
 /// Close the main Iced window so the application actually exits after worker
 /// teardown. Without this, the event loop would keep running with dead workers.
 fn quit_task() -> Task<Message> {
@@ -417,7 +446,20 @@ pub fn update(state: &mut AppState, msg: Message) -> Task<Message> {
         Message::SetTheme(t) => {
             state.settings.theme = t;
             let _ = state.settings.save();
+            // Re-apply the DWM immersive-dark flag so Mica matches the new theme.
+            backdrop_task(matches!(t, crate::config::ThemeMode::Dark))
+        }
+        Message::ApplyBackdrop => {
+            backdrop_task(matches!(
+                state.settings.theme,
+                crate::config::ThemeMode::Dark
+            ))
+        }
+        Message::BackdropApplied(kind) => {
+            state.backdrop = kind;
+            state.status = format!("Backdrop: {}", kind.label());
             Task::none()
+        }
         }
         Message::SetMaxEntries(n) => {
             state.settings.max_entries = n;

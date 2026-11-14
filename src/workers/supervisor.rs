@@ -51,6 +51,7 @@ pub fn init() -> Result<AppState, String> {
         // Iced 0.13 has no true "start hidden in tray" primitive; the window
         // opens visible and the global show/hide hotkey owns minimized state.
         window_hidden: false,
+        backdrop: crate::platform::backdrop::BackdropKind::default(),
         show_settings: false,
         show_clear_confirm: false,
         show_about: false,

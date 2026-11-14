@@ -2,14 +2,14 @@
 ; ClipVault — Inno Setup 6 installer script
 ; Build with:
 ;   "C:\Users\Dodot\AppData\Local\Programs\Inno Setup 6\ISCC.exe" installer\ClipVault.iss
-; Produces: installer\Output\ClipVault-0.1.5-Setup.exe
+; Produces: installer\Output\ClipVault-0.1.6-Setup.exe
 ;
 ; Per-user install (no admin elevation): files go to {localappdata}\Programs\ClipVault,
 ; shortcuts to the current user's Start Menu. No HKLM writes, no services, no drivers.
 ; No network access at install time or runtime.
 
 #define MyAppName "ClipVault"
-#define MyAppVersion "0.1.5"
+#define MyAppVersion "0.1.6"
 #define MyAppPublisher "Manuel"
 #define MyAppURL "https://github.com/manuel/clipvault"
 #define MyAppExeName "clipvault.exe"
@@ -39,7 +39,7 @@ AllowNoIcons=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=Output
-OutputBaseFilename=ClipVault-0.1.5-Setup
+OutputBaseFilename=ClipVault-0.1.6-Setup
 SetupIconFile=..\assets\icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/max

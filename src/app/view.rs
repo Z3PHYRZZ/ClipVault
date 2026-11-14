@@ -68,6 +68,18 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
         main_col.spacing(sp::GAP_TIGHT).into()
     };
 
+    // Native backdrop: keep the root fully transparent so the DWM-blurred
+    // desktop shows through. On systems without a native effect, fall back to
+    // the opaque ambient gradient (readability + consistent look).
+    let root_style = move |t: &Theme| iced::widget::container::Style {
+        background: if state.backdrop.is_native() {
+            None
+        } else {
+            Some(theme::ambient_background(t))
+        },
+        ..Default::default()
+    };
+
     let base = container(
         row![
             container(sidebar).style(|t: &Theme| theme::panel_style(t)),
@@ -78,12 +90,7 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
     .width(Length::Fill)
     .height(Length::Fill)
     .padding(sp::SM)
-    // Soft ambient gradient sits BEHIND every frosted layer, giving depth
-    // without a real (unsupported) backdrop blur.
-    .style(|t: &Theme| iced::widget::container::Style {
-        background: Some(theme::ambient_background(t)),
-        ..Default::default()
-    });
+    .style(root_style);
 
     // Modal overlays.
     if state.show_delete_selected_confirm {

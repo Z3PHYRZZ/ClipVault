@@ -5,6 +5,54 @@ All notable changes to ClipVault are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2026-11-14
+
+Real OS-level acrylic / Mica translucency. New GitHub Release tag `v0.1.6`;
+v0.1.5 stays stable.
+
+### Added
+- **Native Windows backdrop** (`src/platform/backdrop.rs`): Iced 0.13 DOES expose
+  the native window handle through `iced::window::run_with_handle` (correction to
+  the v0.1.5 "Iced hides the HWND" claim). The app now extracts
+  `Win32WindowHandle.hwnd` and applies, in order: Windows 11 Mica
+  (`DwmSetWindowAttribute` with `DWMWA_SYSTEMBACKDROP_TYPE` / `DWMSBT_MAINWINDOW`
+  + `DWMWA_USE_IMMERSIVE_DARK_MODE`), undocumented acrylic via
+  `SetWindowCompositionAttribute` (`ACCENT_ENABLE_ACRYLICBLURBEHIND`), legacy
+  `DwmEnableBlurBehindWindow`, else a `None` software-gradient fallback. Every
+  failure degrades gracefully; no panic, no clipboard content logged.
+- `BackdropKind` (Mica / Acrylic / BlurBehind / None) recorded in `AppState`,
+  shown in the status bar, and re-applied on theme change so dark mode follows.
+- `iced::window::Settings.transparent = true` (winit forwards it via
+  `.with_transparent(...)`), with a **fully transparent root** when a native
+  backdrop is active and the opaque ambient gradient as fallback otherwise.
+- Readability reconciliation: chrome glass (sidebar / search / toolbar / status)
+  drops to near-clear ~0.40-0.42 alpha so the blurred desktop shows through,
+  while entry cards / preview pane rise to ~0.93-0.94 as an opaque content scrim.
+  `button_text()` now uses a deterministic theme foreground for translucent pills
+  (the backdrop is an unknown wallpaper, so luminance guessing is unreliable).
+- Dependencies: `raw-window-handle = "0.6.2"` (version already in the lockfile)
+  and the `Win32_Graphics_Dwm` feature on `windows 0.62.2`. No network crates.
+- 3 new unit tests (BackdropKind labels/default, ACCENT_POLICY layout sizes,
+  null-HWND rejection). **52 tests total.**
+
+### Changed
+- `Message::{ApplyBackdrop, BackdropApplied}`, `AppState.backdrop` in all 3
+  constructors, `backdrop_task()` in `update.rs` (get_oldest -> run_with_handle
+  -> Map), `initialize()` fires `ApplyBackdrop` on the first update pass.
+- `view.rs` root style switches transparent/gradient based on `AppState.backdrop`.
+- `ARCHITECTURE.md`, `V015_FROSTED_PLAN.md` corrected: native Mica IS reachable
+  via `run_with_handle`; the v0.1.5 limitation applied only to a direct HWND
+  accessor, not to the callback hook.
+
+### Known limitations
+- Mica is Windows 11 only; Win10 uses experimental acrylic (undocumented export)
+  or blur-behind. RDP / remote sessions / some GPU drivers can disable DWM
+  translucency entirely — the `None` fallback keeps the app usable.
+- Content cards stay near-opaque by design; "full acrylic" applies to the window
+  chrome, not text-bearing surfaces, per the readability requirement.
+- Requires a transparent winit window + DWM composition; verified visually on
+  the host OS (cannot be proven headlessly). See `V016_ACRYLIC_PLAN.md`.
+
 ## [0.1.5] - 2026-11-14
 
 Frosted-glass theme refinement. New GitHub Release tag `v0.1.5`; v0.1.4 stays stable.
@@ -252,6 +300,7 @@ First public release. A complete, private Windows clipboard manager built in Rus
 - `CF_BITMAP` (device-dependent HBITMAP) is intentionally skipped; DIB/DIBV5 are
   preferred. RLE-compressed DIBs are rejected.
 
+[0.1.6]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.6
 [0.1.5]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.5
 [0.1.4]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4
 [0.1.3]: https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.3

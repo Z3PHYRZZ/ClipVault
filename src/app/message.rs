@@ -71,4 +71,8 @@ pub enum Message {
     RetentionTick,
     ShowWindow,
     HideWindow,
+    /// v0.1.6: apply the native Windows backdrop once the window exists, and
+    /// record which DWM path succeeded (for re-apply on theme change + status).
+    ApplyBackdrop,
+    BackdropApplied(crate::platform::backdrop::BackdropKind),
 }

@@ -229,8 +229,13 @@ softer (`~0.64-0.66`) for cards/preview/status — with 1px specular WHITE borde
 (0.40 light / 0.08 dark) and diffused shadows (20px panel / 14px card). Buttons,
 inputs, and dropdowns are crisp semi-transparent pills. Hover lifts the shadow
 offset (`translateY(-1px)` equivalent) and thickens the border; no animated blur.
-No compositor blur filter exists in Iced 0.13, and native DWM Mica is not applied
-because `iced_winit` hides the HWND — documented in `V015_FROSTED_PLAN.md`. All
+No compositor blur filter exists in Iced's widget layer, but **v0.1.6 adds real
+OS-level translucency**: `iced::window::run_with_handle` hands the app the raw
+`Win32WindowHandle.hwnd`, and `src/platform/backdrop.rs` applies DWM Mica
+(Win11) / acrylic / blur-behind with a gradient fallback. The window is created
+with `transparent: true`; the root is transparent when a native backdrop is
+active. Chrome glass is near-clear, content cards stay near-opaque for
+readability. See `V016_ACRYLIC_PLAN.md`. All
 frost tokens are alpha/tint derivatives of CREAM/INK/WHITE, not new hues. Text
 contrast is >= 6.28:1 on buttons and >= 11.7:1 on glass in both themes.
 
