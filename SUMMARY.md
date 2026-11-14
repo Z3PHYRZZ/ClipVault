@@ -1,29 +1,28 @@
 # ClipVault — Session Summary
 
-## CURRENT STATUS (2026-11-14) — v0.1.4 shipped, v0.1.5 frosted theme in progress
-- **v0.1.4 "Organization tools" is live:** commit `ce7a50e`, tag/Release
-  https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.4. Assets
-  `ClipVault-0.1.4-Setup.exe` (6,419,671 B, sha256 `f08eb0ea…`) +
-  `clipvault.exe` (14,142,976 B, sha256 `48c043fc…`) verified against GitHub
-  digests. 49 tests, all gates 0, exe `0.1.4.0` subsystem 2.
-- **In progress: v0.1.5 "Frosted glass theme"** — soften/anchor navigation with
-  layered alpha-tinted glass over a static ambient gradient, specular 1px borders,
-  diffused shadows, crisp semi-transparent pills, hover elevation. Frozen spec in
-  `V015_FROSTED_PLAN.md` (documents the honest limitation: no true OS Mica because
-  Iced 0.13 hides the HWND; no CSS `backdrop-filter` in Rust/Iced).
-- Implemented: `contracts.rs` frosted tokens (alpha derivatives of CREAM/INK/WHITE,
-  no new hues), `theme.rs` rewritten (ambient_background gradient, glass panel/card/
-  surface styles, input/pick_list styles, composited button_text for readability),
-  `view.rs` root ambient gradient + panel/glass styles, `preview.rs` input + glass,
-  `search_bar.rs` input/pick_list styles, `settings.rs` input/pick_list styles.
-- Gates currently green: fmt --check / check --all-targets / clippy -D warnings /
-  49 tests. Contrast verified >= 6.28:1 buttons, >= 11.7:1 glass, both themes.
-- Next: rewrite CHANGELOG/RELEASE_NOTES/README/ARCHITECTURE (partly done), full
-  release build + icon + installer, install/run/uninstall, commit + push, create
-  **v0.1.5** GitHub Release with both assets. Version bumped to 0.1.5 everywhere
-  (Cargo.toml/lock/build.rs/Inno/docs); `winres` still `0.1.12`.
-  NOTE: the version-bump sed temporarily corrupted `tracing = "0.1.44"` to
-  `"0.1.54"` (nonexistent crate version) — restored; all other deps verified clean.
+## CURRENT STATUS (2026-11-14) — v0.1.5 SHIPPED
+- **v0.1.5 "Frosted glass theme" is live:** commit `5a7c6cb`, Release
+  https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.5. All six releases
+  (v0.1.0/1/2/3/4/5) live. Worktree clean, local == remote.
+- Assets: `ClipVault-0.1.5-Setup.exe` (6,424,443 B, sha256 `db729da8…`) +
+  `clipvault.exe` (14,161,408 B, sha256 `26389981…`); both verified byte-for-byte
+  against GitHub API digests. exe `0.1.5.0`, PE subsystem 2 (no console).
+- Gates: fmt --check / check --all-targets / clippy -D warnings / test all exit 0;
+  **49 tests**; release build + installer; install / run (stays up) / uninstall
+  0 / True / 0.
+- Delivered: layered alpha-tinted frosted glass (deeper panels ~0.8, softer cards
+  ~0.65) over a static 3-stop ambient gradient, 1px specular WHITE borders
+  (0.40 light / 0.08 dark), diffused shadows (20/14px), crisp semi-transparent
+  pills for buttons/inputs/dropdowns, hover shadow lift + border emphasis, and
+  composited button_text() for readability (>= 6.28:1 buttons, >= 11.7:1 glass,
+  both themes). No compositor blur, no animated blur -> smooth scroll/resize.
+- Honest limitation documented (V015_FROSTED_PLAN.md + RELEASE_NOTES): no true
+  OS Mica/Acrylic — Iced 0.13 hides the HWND; `DwmSetWindowAttribute` would need
+  a framework patch or fragile `FindWindowW`. Mica is Win11-only. Gradient +
+  layered alpha surfaces are the framework-supported approximation.
+- Note: version-bump sed briefly corrupted `tracing = "0.1.44"` -> `"0.1.54"`
+  (nonexistent version); restored, all deps verified clean.
+- Next: nothing pending. Await the next feature request.
 
 **Goal:** Production-quality Windows clipboard manager in Rust (edition 2024) + Iced,
 SQLite, windows-rs. Full requirements in the /goal command; 11 development phases;
