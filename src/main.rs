@@ -18,7 +18,7 @@ fn view(state: &AppState) -> iced::Element<'_, Message> {
 }
 
 fn theme(state: &AppState) -> iced::Theme {
-    theme_for(state.settings.theme)
+    theme_for(state.settings.theme, state.settings.dark_mode)
 }
 
 fn subscription(state: &AppState) -> iced::Subscription<Message> {
@@ -58,6 +58,12 @@ fn initialize() -> (AppState, Task<Message>) {
                     show_clear_confirm: false,
                     show_about: false,
                     paused: false,
+                    theme_combo: iced::widget::combo_box::State::new(
+                        clipvault::config::ThemeMode::all().to_vec(),
+                    ),
+                    density_combo: iced::widget::combo_box::State::new(
+                        clipvault::domain::ListDensity::all().to_vec(),
+                    ),
                     status: "Worker initialization failed".into(),
                     events_tx,
                     events_rx,

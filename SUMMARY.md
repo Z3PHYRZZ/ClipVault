@@ -1,5 +1,36 @@
 # ClipVault — Session Summary
 
+## CURRENT TASK (2026-11-17) — shadcn/ui visual-language port into Iced
+- **Goal:** completely redo the UI following https://ui.shadcn.com/docs/components. Confirmed with
+  Manuel: approach **A** — port shadcn's visual system/patterns natively in iced 0.13 (NOT a
+  Tauri/React rewrite; NOT porting all 60+ catalog widgets). Backend/Message/state untouched.
+- **Design doc:** `docs/superpowers/specs/2026-11-17-shadcn-ui-language-port-design.md`.
+  Research workflow (4 agents, shadcn tokens + Iced-surface audit + 0.13 API feasibility +
+  synthesis) completed; full spec landed. Baseline `cargo check --all-targets` green (0 errors).
+- **Target look:** shadcn default zinc light/dark (bg #FFFFFF/#09090B, fg #09090B/#FAFAFA,
+  card/primary/secondary/muted/accent/border/input/ring/destructive per canonical v3 theme),
+  8px radius, 1px hairline borders, flat surfaces, small single shadow, Tailwind spacing.
+- **Files to change:** contracts.rs (zinc tokens), gui/spacing.rs (tokens), gui/theme.rs (rewrite),
+  gui/widgets.rs (rewrite), app/view.rs + all 6 gui/views/*.rs. DO NOT touch message.rs/state.rs/
+  update.rs/main.rs/platform/. Keep CREAM/INK for icon.rs; retire frosted tokens.
+- **Constraints:** ASCII strings only; hover messages load-bearing; native DWM backdrop retained;
+  keep text_on() contrast guard (anti-INK-on-INK fix); no new deps.
+- **Next:** implement contracts → spacing → theme → widgets → views; then fmt/check/clippy/test/
+  debug+release build; docs; NO commit/push without a separate confirm.
+- **Done (2026-11-17):** full implementation across contracts.rs / spacing.rs /
+  theme.rs / widgets.rs / app/view.rs / all 6 views / backdrop.rs. Zinc light+dark
+  verified by live screenshot; history row restructured to two lines after smoke
+  test exposed ~110px text squeeze; acrylic tint switched to zinc.
+  **All gates green:** fmt, check, clippy -D warnings, 56 tests, debug + release
+  build. CHANGELOG updated. NO commit made (separate confirm required).
+- **Motion/theme iteration (final 2026-11-17):** ocean wave was implemented then
+  REVERTED at Manuel's request ("seems weird"). Final: 6 color themes × light/dark
+  via `ThemeMode` (Zinc/Slate/Stone/Rose/Blue/Green) + `dark_mode` setting; every
+  component resolves roles through `spec(theme)`; root paints flat theme color (no
+  Mica gray/silver). Kept animate-ui press feedback, sidebar real-button styling,
+  rounded combo_box dropdowns, and a "|" status separator. Full gate green: fmt,
+  check, clippy -D warnings, 58 tests (42 unit + 16 integration), release build.
+
 ## CURRENT STATUS (2026-11-14) — v0.1.5 shipped, v0.1.6 native acrylic IN PROGRESS
 - **v0.1.5 "Frosted glass theme" is live:** commit `93cf05a`, Release
   https://github.com/Z3PHYRZZ/ClipVault/releases/tag/v0.1.5. All six releases

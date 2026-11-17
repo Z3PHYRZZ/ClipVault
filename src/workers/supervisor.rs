@@ -56,6 +56,10 @@ pub fn init() -> Result<AppState, String> {
         show_clear_confirm: false,
         show_about: false,
         paused: paused_flag.load(Ordering::SeqCst),
+        theme_combo: iced::widget::combo_box::State::new(crate::config::ThemeMode::all().to_vec()),
+        density_combo: iced::widget::combo_box::State::new(
+            crate::domain::ListDensity::all().to_vec(),
+        ),
         status: "Ready".into(),
         events_tx,
         events_rx,

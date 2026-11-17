@@ -1,12 +1,13 @@
 //! Scrollable clipboard history list with per-entry actions + bulk selection.
+//! shadcn port: Card-like row surfaces, Badge chips, ghost/outline/toggle/delete
+//! buttons, styled Checkbox. Hover/selected/checked fold into entry_card_style.
 use crate::app::{AppState, Message};
-use crate::contracts::{CREAM, INK};
 use crate::domain::{ContentKind, ListDensity};
 use crate::gui::spacing as sp;
 use crate::gui::theme;
 use crate::gui::widgets;
-use iced::widget::{Space, checkbox, column, container, image, mouse_area, row, scrollable, text};
-use iced::{Background, Border, Element, Length, Theme};
+use iced::widget::{Space, column, container, image, mouse_area, row, scrollable, text};
+use iced::{Element, Length, Theme};
 
 /// Selection toolbar shown above the list when at least one row is checked.
 pub fn selection_toolbar(state: &AppState) -> Element<'_, Message> {
@@ -18,7 +19,7 @@ pub fn selection_toolbar(state: &AppState) -> Element<'_, Message> {
             widgets::quiet_button("Select all", Message::SelectAll),
             widgets::quiet_button("Pin", Message::PinSelected(true)),
             widgets::quiet_button("Favorite", Message::FavoriteSelected(true)),
-            widgets::icon_button("Delete", Message::RequestDeleteSelected),
+            widgets::destructive_button("Delete", Message::RequestDeleteSelected),
             widgets::quiet_button("Clear", Message::ClearSelection),
         ]
         .spacing(sp::GAP_TIGHT)
@@ -26,7 +27,7 @@ pub fn selection_toolbar(state: &AppState) -> Element<'_, Message> {
     )
     .padding(sp::pad(sp::STATUS_PAD))
     .width(Length::Fill)
-    .style(|t: &Theme| theme::panel_style(t))
+    .style(theme::panel_style)
     .into()
 }
 
@@ -44,7 +45,11 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
     } else {
         sp::ROW_PAD
     };
-    let thumb_h: u16 = if compact { 30 } else { 42 };
+    let thumb_h: u16 = if compact {
+        sp::THUMB_H_COMPACT
+    } else {
+        sp::THUMB_H
+    };
 
     let mut list = column![].spacing(sp::GAP_TIGHT);
     for entry in &state.entries {
@@ -56,17 +61,14 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
         let favorite = entry.favorite;
 
         // Checkbox lives OUTSIDE the row's mouse_area so a selection click never
-        // races the card's SelectEntry press.
-        let check: Element<'_, Message> = checkbox("", checked)
-            .on_toggle(move |_| Message::ToggleSelect(id))
-            .size(18)
-            .into();
+        // races the card's SelectEntry press (race fix from v0.1.4).
+        let check: Element<'_, Message> =
+            widgets::checkbox("", checked, move |_| Message::ToggleSelect(id));
 
-        // Photo preview: Iced loads the PNG from disk lazily (no GUI-thread read).
         let leading: Element<'_, Message> = if entry.kind == ContentKind::Image {
             if let Some(path) = entry.image_path.as_deref() {
                 image(image::Handle::from_path(std::path::PathBuf::from(path)))
-                    .width(52)
+                    .width(sp::THUMB_W)
                     .height(thumb_h)
                     .into()
             } else {
@@ -76,7 +78,6 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
             widgets::badge(entry.short_kind(), entry.kind)
         };
 
-        // Provenance + tag chips line.
         let mut subtitle =
             column![text(format!("used {} times", entry.use_count)).size(sp::TEXT_CAPTION)]
                 .spacing(sp::GAP_TIGHT);
@@ -89,7 +90,7 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
             if !provenance.is_empty() {
                 provenance.push_str(" - ");
             }
-            provenance.push_str(&url.chars().take(60).collect::<String>());
+            provenance.push_str(&url.chars().take(sp::URL_DISPLAY_CHARS).collect::<String>());
         }
         if !provenance.is_empty() {
             subtitle = subtitle.push(text(provenance).size(sp::TEXT_CAPTION));
@@ -97,16 +98,15 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
         let tags = entry.tags();
         if !tags.is_empty() {
             let mut chips = row![].spacing(sp::XS);
-            for t in tags.into_iter().take(4) {
+            for t in tags.into_iter().take(sp::MAX_TAGS_SHOWN) {
                 chips = chips.push(widgets::badge(&format!("#{t}"), entry.kind));
             }
             subtitle = subtitle.push(chips);
         }
 
-        let row_content = row![
-            leading,
-            Space::with_width(sp::GAP_TIGHT),
-            column![text(entry.display_text()).size(sp::TEXT_BODY), subtitle].width(Length::Fill),
+        // Two-line card: text/subtitle get the full width on line 1; the
+        // action row sits below so padded buttons cannot squeeze the text.
+        let actions: Element<'_, Message> = row![
             widgets::state_button(
                 if pinned { "Unpin" } else { "Pin" },
                 pinned,
@@ -118,10 +118,25 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
                 Message::FavoriteEntry(id, !favorite)
             ),
             widgets::quiet_button("Copy", Message::RestoreEntry(id)),
-            widgets::quiet_button("Delete", Message::DeleteEntry(id)),
+            widgets::destructive_button("Delete", Message::DeleteEntry(id)),
         ]
         .spacing(sp::GAP_TIGHT)
-        .align_y(iced::Alignment::Center);
+        .align_y(iced::Alignment::Center)
+        .into();
+
+        let row_content: Element<'_, Message> = column![
+            row![
+                leading,
+                Space::with_width(sp::GAP_TIGHT),
+                column![text(entry.display_text()).size(sp::TEXT_BODY), subtitle]
+                    .width(Length::Fill),
+            ]
+            .spacing(sp::GAP_TIGHT)
+            .align_y(iced::Alignment::Center),
+            actions,
+        ]
+        .spacing(sp::GAP_TIGHT)
+        .into();
 
         let card = container(
             mouse_area(row_content)
@@ -131,28 +146,9 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
         )
         .padding(sp::pad(row_pad))
         .width(Length::Fill)
-        .style(move |t: &Theme| {
-            let mut s = theme::card_hover_style(t, hovered);
-            if selected {
-                s.background = Some(Background::Color(CREAM));
-                s.border = Border {
-                    radius: sp::r(sp::RADIUS_CARD),
-                    width: sp::HOVER_BORDER,
-                    color: INK,
-                };
-            }
-            if checked {
-                s.border = Border {
-                    radius: sp::r(sp::RADIUS_CARD),
-                    width: sp::HOVER_BORDER,
-                    color: INK,
-                };
-            }
-            s
-        });
+        .style(move |t: &Theme| theme::entry_card_style(t, hovered, selected, checked));
 
-        // Outer row: checkbox + card. The checkbox is deliberately not inside
-        // mouse_area so both interactions stay independent.
+        // Outer row: checkbox + card. The checkbox stays outside mouse_area.
         list = list.push(
             row![check, card]
                 .spacing(sp::GAP_TIGHT)
@@ -162,5 +158,6 @@ pub fn history_list(state: &AppState) -> Element<'_, Message> {
 
     scrollable(container(list).padding(sp::LIST_PAD).width(Length::Fill))
         .height(Length::Fill)
+        .style(theme::scrollable_style)
         .into()
 }

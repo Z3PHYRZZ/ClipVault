@@ -1,9 +1,29 @@
 //! Root view composition: sidebar | (search + list | preview), plus modals.
+//! shadcn port: flat Card surfaces; dialogs get a black/80 scrim over an opaque
+//! base so clicks never leak through the stack. Native backdrop branch preserved.
 use crate::app::{AppState, Message};
 use crate::gui::spacing as sp;
 use crate::gui::theme;
-use iced::widget::{Space, column, container, row};
+use iced::widget::{Space, column, container, opaque, row, stack};
 use iced::{Element, Length, Theme};
+
+/// Wrap a centered shadcn Dialog card with a scrim over an opaque base.
+fn modal<'a>(base: Element<'a, Message>, dialog: Element<'a, Message>) -> Element<'a, Message> {
+    let scrim = container(Space::with_width(Length::Fill).height(Length::Fill))
+        .width(Length::Fill)
+        .height(Length::Fill)
+        .style(theme::dialog_scrim_style);
+    stack![
+        opaque(base),
+        iced::widget::mouse_area(scrim).on_press(Message::Noop),
+        container(dialog)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .center_x(Length::Fill)
+            .center_y(Length::Fill),
+    ]
+    .into()
+}
 
 pub fn view(state: &AppState) -> Element<'_, Message> {
     let sidebar = crate::gui::views::sidebar::sidebar(state);
@@ -14,10 +34,9 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
         let mut main_col = column![
             container(crate::gui::views::search_bar::search_bar(state))
                 .padding(sp::pad(sp::PANEL_PAD))
-                .style(|t: &Theme| theme::panel_style(t)),
+                .style(theme::panel_style),
             Space::with_height(sp::GAP_TIGHT),
         ];
-        // Bulk-selection toolbar appears only when rows are checked.
         if !state.selected_ids.is_empty() {
             main_col = main_col.push(crate::gui::views::history::selection_toolbar(state));
             main_col = main_col.push(Space::with_height(sp::GAP_TIGHT));
@@ -36,6 +55,7 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
                 container(
                     iced::widget::row![
                         iced::widget::text(&state.status).size(sp::TEXT_CAPTION),
+                        iced::widget::text("|").size(sp::TEXT_CAPTION),
                         iced::widget::text(format!("{} entries", state.total_count))
                             .size(sp::TEXT_CAPTION),
                         iced::widget::Space::with_width(Length::Fill),
@@ -55,7 +75,10 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
                                 }
                             )
                         ),
-                        crate::gui::widgets::quiet_button("Clear all", Message::RequestClearAll),
+                        crate::gui::widgets::destructive_button(
+                            "Clear all",
+                            Message::RequestClearAll
+                        ),
                         crate::gui::widgets::quiet_button("Prev", Message::PrevPage),
                         crate::gui::widgets::quiet_button("Next", Message::NextPage),
                     ]
@@ -63,48 +86,42 @@ pub fn view(state: &AppState) -> Element<'_, Message> {
                     .align_y(iced::Alignment::Center),
                 )
                 .padding(sp::pad(sp::STATUS_PAD))
-                .style(|t: &Theme| theme::glass_surface(t)),
+                .style(theme::glass_surface),
             );
         main_col.spacing(sp::GAP_TIGHT).into()
     };
 
-    // Native backdrop: keep the root fully transparent so the DWM-blurred
-    // desktop shows through. On systems without a native effect, fall back to
-    // the opaque ambient gradient (readability + consistent look).
-    let root_style = move |t: &Theme| iced::widget::container::Style {
-        background: if state.backdrop.is_native() {
-            None
-        } else {
-            Some(theme::ambient_background(t))
-        },
+    // Paint the flat zinc surface always so light = true #FFFFFF and dark =
+    // true #09090B. The native backdrop remains applied on the HWND, but no
+    // longer tints the content through a transparent root (that made dark look
+    // gray and light look silver).
+    let root_style = |t: &Theme| iced::widget::container::Style {
+        background: Some(theme::ambient_background(t)),
         ..Default::default()
     };
 
-    let base = container(
-        row![
-            container(sidebar).style(|t: &Theme| theme::panel_style(t)),
-            main,
-        ]
-        .spacing(sp::GAP_TIGHT),
-    )
-    .width(Length::Fill)
-    .height(Length::Fill)
-    .padding(sp::SM)
-    .style(root_style);
+    let base =
+        container(row![container(sidebar).style(theme::panel_style), main,].spacing(sp::GAP_TIGHT))
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .padding(sp::SM)
+            .style(root_style);
 
-    // Modal overlays.
+    // Modal overlays: precedence delete > clear > about.
     if state.show_delete_selected_confirm {
-        return iced::widget::stack![
-            base,
-            crate::gui::views::dialogs::confirm_delete_selected(state)
-        ]
-        .into();
+        return modal(
+            base.into(),
+            crate::gui::views::dialogs::confirm_delete_selected(state),
+        );
     }
     if state.show_clear_confirm {
-        return iced::widget::stack![base, crate::gui::views::dialogs::confirm_clear(state)].into();
+        return modal(
+            base.into(),
+            crate::gui::views::dialogs::confirm_clear(state),
+        );
     }
     if state.show_about {
-        return iced::widget::stack![base, crate::gui::views::dialogs::about(state)].into();
+        return modal(base.into(), crate::gui::views::dialogs::about(state));
     }
     base.into()
 }

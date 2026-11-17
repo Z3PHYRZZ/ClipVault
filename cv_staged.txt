@@ -1,0 +1,1 @@
+fatal: cannot change to 'D:GitHubClipVault': No such file or directory

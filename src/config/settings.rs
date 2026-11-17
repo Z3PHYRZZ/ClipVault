@@ -15,16 +15,39 @@ pub enum ConfigError {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ThemeMode {
-    Light,
-    Dark,
+    #[serde(alias = "Light")]
+    Zinc,
+    #[serde(alias = "Dark")]
+    Slate,
+    Stone,
+    Rose,
+    Blue,
+    Green,
+    Violet,
 }
 
 impl ThemeMode {
     pub fn label(self) -> &'static str {
         match self {
-            ThemeMode::Light => "Light",
-            ThemeMode::Dark => "Dark",
+            ThemeMode::Zinc => "Zinc",
+            ThemeMode::Slate => "Slate",
+            ThemeMode::Stone => "Stone",
+            ThemeMode::Rose => "Rose",
+            ThemeMode::Blue => "Blue",
+            ThemeMode::Green => "Green",
+            ThemeMode::Violet => "Violet",
         }
+    }
+    pub fn all() -> &'static [ThemeMode] {
+        &[
+            ThemeMode::Zinc,
+            ThemeMode::Slate,
+            ThemeMode::Stone,
+            ThemeMode::Rose,
+            ThemeMode::Blue,
+            ThemeMode::Green,
+            ThemeMode::Violet,
+        ]
     }
 }
 
@@ -38,6 +61,9 @@ impl std::fmt::Display for ThemeMode {
 #[serde(default)]
 pub struct Settings {
     pub theme: ThemeMode,
+    /// Light/dark variant of the active color theme.
+    #[serde(default)]
+    pub dark_mode: bool,
     pub max_entries: usize,
     pub max_age_days: u32,
     /// Per-type caps; 0 = fall back to the global `max_entries`.
@@ -57,7 +83,8 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            theme: ThemeMode::Light,
+            theme: ThemeMode::Zinc,
+            dark_mode: false,
             max_entries: contracts::DEFAULT_MAX_ENTRIES,
             max_age_days: contracts::DEFAULT_MAX_AGE_DAYS,
             max_entries_text: 0,

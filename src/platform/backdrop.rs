@@ -140,9 +140,9 @@ fn try_acrylic(hwnd: windows::Win32::Foundation::HWND, dark: bool) -> Option<Bac
         let set_attr: SetWindowCompositionAttributeFn = std::mem::transmute(proc);
 
         // ACCENT_ENABLE_ACRYLICBLURBEHIND = 4; flag 2 draws the whole window.
-        // GradientColor is ABGR: low alpha keeps the desktop visible, with a
-        // dark/light tint matching the app theme.
-        let tint: u32 = if dark { 0x99_22_22_3B } else { 0x99_F2_E9_E4 };
+        // GradientColor is ABGR. Zinc tints match the shadcn palette:
+        // light #FFFFFF -> 0x99_FF_FF_FF, dark #09090B -> 0x99_0B_09_09.
+        let tint: u32 = if dark { 0x99_0B_09_09 } else { 0x99_FF_FF_FF };
         let mut policy = AccentPolicy {
             accent_state: 4,
             accent_flags: 2,

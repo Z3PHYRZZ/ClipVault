@@ -57,6 +57,7 @@ pub enum Message {
     OpenSettings,
     CloseSettings,
     SetTheme(ThemeMode),
+    SetDarkMode(bool),
     SetMaxEntries(usize),
     SetMaxAgeDays(u32),
     SetPauseMonitoring(bool),

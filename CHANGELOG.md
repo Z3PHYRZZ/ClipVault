@@ -5,6 +5,50 @@ All notable changes to ClipVault are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-11-17
+
+### Added
+- **Six complete color themes** — Zinc, Slate, Stone, Rose, Blue, Green — each
+  with a full light+dark palette (background, card, primary, muted, accent,
+  border, ring, destructive). Every widget resolves its colors through a single
+  `spec(theme)` table, so the entire UI stays consistent when the theme changes.
+  Pick "Color theme" and "Dark mode" in Settings. Old `Light`/`Dark` settings
+  values are accepted as aliases for Zinc/Slate.
+- Root now always paints the flat theme background, so dark is true zinc-950
+  (not OS Mica gray) and light is true white (not silver).
+- animate-ui motion: ease-out press feedback on buttons, reduced-motion aware.
+  (The ocean-wave theme transition was reverted at Manuel's request.)
+- Sidebar nav items look like real buttons; Settings selectors use combo_box
+  with rounded/bordered popovers instead of iced's boxy defaults.
+
+### Changed
+- **Complete UI redo in the shadcn/ui visual language.** ClipVault is native
+  Iced, so shadcn (React + Tailwind + Radix) cannot be installed directly; the
+  design system was ported widget-for-widget instead. See
+  `docs/superpowers/specs/2026-11-17-shadcn-ui-language-port-design.md`.
+- Default **zinc palette** (canonical shadcn v3, light #FFFFFF / dark #09090B)
+  replaces the CREAM/INK frosted-glass theme across every view; 8px base radius,
+  1px hairline borders, flat surfaces, small single shadows, Tailwind spacing.
+- Reusable component set in `theme.rs` / `widgets.rs`: Button variants
+  (default / secondary / outline / ghost / destructive), Card, panel, Badge,
+  Input, Select, Checkbox (now styled — previously iced default), Separator,
+  Dialog with scrim + opaque base, Scroll Area, Toggle/ToggleGroup, Hover Card.
+  Catalog components with no surface in a clipboard manager (Calendar, Carousel,
+  Data Table, Command, Toast, Chart, ...) were deliberately left out.
+- History rows are two-line cards: entry text fills line 1, action buttons sit
+  on line 2 (previous single-line row squeezed text to ~110px).
+- Native DWM acrylic fallback tint changed from CREAM/INK to zinc (#FFFFFF /
+  #09090B) so the window chrome matches the app palette.
+- All geometry literals centralized in `gui/spacing.rs`; all UI strings remain
+  ASCII; hover messages and the text-on-fill contrast guard are preserved.
+- No behavioral change: Message enum, AppState, workers, settings schema, and
+  shortcuts are untouched.
+
+### Added
+- `tests` in `gui/theme.rs` for zinc palette, light/dark detection, and the
+  contrast guard. Full gate green: fmt, check, clippy -D warnings, 56 tests,
+  debug + release build, and screenshot smoke in both light and dark themes.
+
 ## [0.1.6] - 2026-11-14
 
 Real OS-level acrylic / Mica translucency. New GitHub Release tag `v0.1.6`;

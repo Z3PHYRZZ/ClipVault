@@ -65,6 +65,9 @@ pub struct AppState {
     pub show_clear_confirm: bool,
     pub show_about: bool,
     pub paused: bool,
+    /// combo_box states for rounded dropdown popovers (2026-11-17 polish).
+    pub theme_combo: iced::widget::combo_box::State<crate::config::ThemeMode>,
+    pub density_combo: iced::widget::combo_box::State<crate::domain::ListDensity>,
     pub status: String,
     pub events_tx: flume::Sender<WorkerEvent>,
     pub events_rx: flume::Receiver<WorkerEvent>,

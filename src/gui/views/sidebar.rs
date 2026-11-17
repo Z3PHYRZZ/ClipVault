@@ -5,9 +5,9 @@ use crate::gui::widgets;
 use iced::widget::{Space, column, container, mouse_area};
 use iced::{Element, Length};
 
+/// A nav/bottom item = hover_button wrapped in mouse_area so pointer
+/// enter/exit flips AppState.hovered_nav, which recomputes the accent style.
 pub fn sidebar(state: &AppState) -> Element<'_, Message> {
-    // A nav/bottom item = hover_button wrapped in mouse_area so pointer
-    // enter/exit flips AppState.hovered_nav, which recomputes the lift style.
     let nav_item = |label_text: &str, n: u8, active: bool, msg: Message| -> Element<'_, Message> {
         let hovered = state.hovered_nav == Some(n);
         let button = widgets::hover_button(label_text, hovered, active, msg);
@@ -25,7 +25,7 @@ pub fn sidebar(state: &AppState) -> Element<'_, Message> {
             Space::with_height(sp::GAP_TITLE),
             widgets::label("clipboard history"),
         ])
-        .padding([sp::MD, sp::XS]),
+        .padding(sp::pad(sp::NAV_PAD)),
         Space::with_height(sp::GAP_SECTION),
         nav_item("All clips", 0, all_active, Message::ClearFilters),
         nav_item(
@@ -49,6 +49,6 @@ pub fn sidebar(state: &AppState) -> Element<'_, Message> {
     ]
     .spacing(sp::GAP_TIGHT)
     .padding(sp::SIDEBAR_PAD)
-    .width(224.0)
+    .width(sp::SIDEBAR_WIDTH)
     .into()
 }

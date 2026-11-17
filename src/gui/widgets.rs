@@ -1,29 +1,25 @@
-//! Reusable styled widgets: rounded cards, badges, empty states, buttons.
-//! v0.1.3 UI rework: bigger type (via `sp::*` tokens), roomier hit areas, and
-//! message-driven hover via `hover_card` / `hover_button`.
+//! Reusable shadcn/ui-styled widget helpers.
+//!
+//! Thin wrappers over iced widgets that bind the theme functions from
+//! `theme.rs` and the geometry tokens from `spacing.rs`. Views use these so no
+//! color or radius magic values leak into layout code.
 use crate::domain::ContentKind;
 use crate::gui::spacing as sp;
 use crate::gui::theme;
-use iced::widget::{Space, button, container, text};
+use iced::widget::{
+    Space, button, checkbox as iced_checkbox, column, container, horizontal_rule, text,
+};
 use iced::{Element, Length, Theme};
 
-/// A rounded card with soft border and subtle shadow.
+/// shadcn Card: rounded surface wrapping arbitrary content.
 pub fn card<'a, M: 'a>(content: impl Into<Element<'a, M>>) -> Element<'a, M> {
     container(content)
         .padding(sp::pad(sp::CARD_PAD))
-        .style(|t: &Theme| theme::card_style(t))
+        .style(theme::card_style)
         .into()
 }
 
-/// A card whose style reacts to a hovered flag (message-driven lift animation).
-pub fn hover_card<'a, M: 'a>(content: impl Into<Element<'a, M>>, hovered: bool) -> Element<'a, M> {
-    container(content)
-        .padding(sp::pad(sp::CARD_PAD))
-        .style(move |t: &Theme| theme::card_hover_style(t, hovered))
-        .into()
-}
-
-/// Small content-type indicator chip.
+/// Content-kind / tag chip (shadcn Badge, pill radius).
 pub fn badge<'a, M: 'a>(label: &str, kind: ContentKind) -> Element<'a, M> {
     container(text(label.to_string()).size(sp::TEXT_CAPTION))
         .padding(sp::pad(sp::BADGE_PAD))
@@ -31,10 +27,10 @@ pub fn badge<'a, M: 'a>(label: &str, kind: ContentKind) -> Element<'a, M> {
         .into()
 }
 
-/// Carefully designed empty state with title + hint.
+/// Centered title + subtitle empty state.
 pub fn empty_state<'a, M: 'a>(title: &str, subtitle: &str) -> Element<'a, M> {
     container(
-        iced::widget::column![
+        column![
             text(title.to_string()).size(sp::TEXT_TITLE),
             Space::with_height(sp::GAP_TITLE),
             text(subtitle.to_string()).size(sp::TEXT_LABEL),
@@ -47,7 +43,7 @@ pub fn empty_state<'a, M: 'a>(title: &str, subtitle: &str) -> Element<'a, M> {
     .into()
 }
 
-/// A prominent primary button.
+/// Primary/default button variant (prominent action).
 pub fn icon_button<'a, M: Clone + 'a>(label: &str, msg: M) -> Element<'a, M> {
     button(text(label.to_string()).size(sp::TEXT_LABEL))
         .on_press(msg)
@@ -56,16 +52,43 @@ pub fn icon_button<'a, M: Clone + 'a>(label: &str, msg: M) -> Element<'a, M> {
         .into()
 }
 
-/// A quiet, low-emphasis text button.
+/// Ghost button variant (low emphasis); name kept for existing call sites.
 pub fn quiet_button<'a, M: Clone + 'a>(label: &str, msg: M) -> Element<'a, M> {
     button(text(label.to_string()).size(sp::TEXT_LABEL))
         .on_press(msg)
         .padding(sp::pad(sp::BUTTON_PAD))
-        .style(theme::subtle_button_style)
+        .style(theme::ghost_button_style)
         .into()
 }
 
-/// A toggle button whose active state is shown by color + border (no glyph).
+/// Secondary button variant.
+pub fn secondary_button<'a, M: Clone + 'a>(label: &str, msg: M) -> Element<'a, M> {
+    button(text(label.to_string()).size(sp::TEXT_LABEL))
+        .on_press(msg)
+        .padding(sp::pad(sp::BUTTON_PAD))
+        .style(theme::secondary_button_style)
+        .into()
+}
+
+/// Outline button variant.
+pub fn outline_button<'a, M: Clone + 'a>(label: &str, msg: M) -> Element<'a, M> {
+    button(text(label.to_string()).size(sp::TEXT_LABEL))
+        .on_press(msg)
+        .padding(sp::pad(sp::BUTTON_PAD))
+        .style(theme::outline_button_style)
+        .into()
+}
+
+/// Destructive button variant (delete / clear actions).
+pub fn destructive_button<'a, M: Clone + 'a>(label: &str, msg: M) -> Element<'a, M> {
+    button(text(label.to_string()).size(sp::TEXT_LABEL))
+        .on_press(msg)
+        .padding(sp::pad(sp::BUTTON_PAD))
+        .style(theme::destructive_button_style)
+        .into()
+}
+
+/// Toggle button: active = default visuals, inactive = outline.
 pub fn state_button<'a, M: Clone + 'a>(label: &str, active: bool, msg: M) -> Element<'a, M> {
     button(text(label.to_string()).size(sp::TEXT_LABEL))
         .on_press(msg)
@@ -74,19 +97,42 @@ pub fn state_button<'a, M: Clone + 'a>(label: &str, active: bool, msg: M) -> Ele
         .into()
 }
 
-/// Button with an explicit hover flag (message-driven hover animation).
-/// `active` selects the INK fill; `hovered` lifts the shadow + thickens border.
+/// Nav button with message-driven hovered/active flags (no iced Status).
 pub fn hover_button<'a, M: Clone + 'a>(
     label: &str,
     hovered: bool,
     active: bool,
     msg: M,
 ) -> Element<'a, M> {
-    button(text(label.to_string()).size(sp::TEXT_LABEL))
-        .on_press(msg)
-        .padding(sp::pad(sp::BUTTON_PAD))
-        .style(move |t: &Theme, _status| theme::nav_hover_style(t, hovered, active))
+    button(
+        text(label.to_string())
+            .size(sp::TEXT_LABEL)
+            .width(iced::Length::Fill),
+    )
+    .on_press(msg)
+    .padding(sp::pad(sp::NAV_PAD))
+    .width(iced::Length::Fill)
+    .height(sp::CONTROL_H)
+    .style(move |t: &Theme, _status| theme::nav_hover_style(t, hovered, active))
+    .into()
+}
+
+/// Styled checkbox (was default iced styling before the shadcn port).
+pub fn checkbox<'a, M: Clone + 'a>(
+    label: &str,
+    is_checked: bool,
+    on_toggle: impl Fn(bool) -> M + 'a,
+) -> Element<'a, M> {
+    iced_checkbox(label.to_string(), is_checked)
+        .on_toggle(on_toggle)
+        .size(sp::CHECKBOX_SIZE)
+        .style(theme::checkbox_style)
         .into()
+}
+
+/// shadcn Separator (horizontal hairline).
+pub fn separator<'a, M: 'a>() -> Element<'a, M> {
+    horizontal_rule(1).style(theme::separator_style).into()
 }
 
 pub fn section_title<'a, M: 'a>(s: &str) -> Element<'a, M> {

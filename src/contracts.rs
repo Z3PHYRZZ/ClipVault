@@ -143,6 +143,86 @@ pub const PEACH_RGB: (u8, u8, u8) = CREAM_RGB;
 pub const SAGE: Color = CREAM;
 pub const PEACH: Color = CREAM;
 
+// ---- shadcn/ui zinc design tokens (2026-11-17 UI port) -------------------
+// Canonical shadcn v3 "zinc" theme, each HSL resolved to its #RRGGBB hex.
+// GUI styles (src/gui/theme.rs) read these instead of the legacy brand pair.
+// The CREAM/INK constants above stay for non-GUI code (platform/icon.rs).
+const fn hex(r: u8, g: u8, b: u8) -> Color {
+    rgb8(r, g, b)
+}
+
+// background / foreground
+pub const ZINC_BG_LIGHT: Color = hex(0xFF, 0xFF, 0xFF);
+pub const ZINC_BG_DARK: Color = hex(0x09, 0x09, 0x0B);
+pub const ZINC_FG_LIGHT: Color = hex(0x09, 0x09, 0x0B);
+pub const ZINC_FG_DARK: Color = hex(0xFA, 0xFA, 0xFA);
+// card
+pub const ZINC_CARD_LIGHT: Color = hex(0xFF, 0xFF, 0xFF);
+pub const ZINC_CARD_DARK: Color = hex(0x09, 0x09, 0x0B);
+pub const ZINC_CARD_FG_LIGHT: Color = hex(0x09, 0x09, 0x0B);
+pub const ZINC_CARD_FG_DARK: Color = hex(0xFA, 0xFA, 0xFA);
+// popover
+pub const ZINC_POPOVER_LIGHT: Color = hex(0xFF, 0xFF, 0xFF);
+pub const ZINC_POPOVER_DARK: Color = hex(0x09, 0x09, 0x0B);
+pub const ZINC_POPOVER_FG_LIGHT: Color = hex(0x09, 0x09, 0x0B);
+pub const ZINC_POPOVER_FG_DARK: Color = hex(0xFA, 0xFA, 0xFA);
+// primary
+pub const ZINC_PRIMARY_LIGHT: Color = hex(0x18, 0x18, 0x1B);
+pub const ZINC_PRIMARY_DARK: Color = hex(0xFA, 0xFA, 0xFA);
+pub const ZINC_PRIMARY_FG_LIGHT: Color = hex(0xFA, 0xFA, 0xFA);
+pub const ZINC_PRIMARY_FG_DARK: Color = hex(0x18, 0x18, 0x1B);
+// secondary
+pub const ZINC_SECONDARY_LIGHT: Color = hex(0xF4, 0xF4, 0xF5);
+pub const ZINC_SECONDARY_DARK: Color = hex(0x27, 0x27, 0x2A);
+pub const ZINC_SECONDARY_FG_LIGHT: Color = hex(0x18, 0x18, 0x1B);
+pub const ZINC_SECONDARY_FG_DARK: Color = hex(0xFA, 0xFA, 0xFA);
+// muted
+pub const ZINC_MUTED_LIGHT: Color = hex(0xF4, 0xF4, 0xF5);
+pub const ZINC_MUTED_DARK: Color = hex(0x27, 0x27, 0x2A);
+pub const ZINC_MUTED_FG_LIGHT: Color = hex(0x71, 0x71, 0x7A);
+pub const ZINC_MUTED_FG_DARK: Color = hex(0xA1, 0xA1, 0xAA);
+// accent
+pub const ZINC_ACCENT_LIGHT: Color = hex(0xF4, 0xF4, 0xF5);
+pub const ZINC_ACCENT_DARK: Color = hex(0x27, 0x27, 0x2A);
+pub const ZINC_ACCENT_FG_LIGHT: Color = hex(0x18, 0x18, 0x1B);
+pub const ZINC_ACCENT_FG_DARK: Color = hex(0xFA, 0xFA, 0xFA);
+// destructive
+pub const ZINC_DESTRUCTIVE_LIGHT: Color = hex(0xEF, 0x44, 0x44);
+pub const ZINC_DESTRUCTIVE_DARK: Color = hex(0x7F, 0x1D, 0x1D);
+pub const ZINC_DESTRUCTIVE_FG: Color = hex(0xFA, 0xFA, 0xFA);
+// border / input / ring
+pub const ZINC_BORDER_LIGHT: Color = hex(0xE4, 0xE4, 0xE7);
+pub const ZINC_BORDER_DARK: Color = hex(0x27, 0x27, 0x2A);
+pub const ZINC_INPUT_LIGHT: Color = hex(0xE4, 0xE4, 0xE7);
+pub const ZINC_INPUT_DARK: Color = hex(0x27, 0x27, 0x2A);
+pub const ZINC_RING_LIGHT: Color = hex(0x18, 0x18, 0x1B);
+pub const ZINC_RING_DARK: Color = hex(0xD4, 0xD4, 0xD8);
+// shadows (single dominant layer per iced Style) + dialog scrim
+pub const ZINC_SHADOW_SM: Color = Color {
+    r: 0.0,
+    g: 0.0,
+    b: 0.0,
+    a: 0.05,
+};
+pub const ZINC_SHADOW_MD: Color = Color {
+    r: 0.0,
+    g: 0.0,
+    b: 0.0,
+    a: 0.10,
+};
+pub const ZINC_SHADOW_LG: Color = Color {
+    r: 0.0,
+    g: 0.0,
+    b: 0.0,
+    a: 0.10,
+};
+pub const ZINC_DIALOG_SCRIM: Color = Color {
+    r: 0.0,
+    g: 0.0,
+    b: 0.0,
+    a: 0.80,
+};
+
 pub const APP_ID: &str = "clipvault";
 pub const DB_FILE: &str = "clipvault.db";
 pub const SETTINGS_FILE: &str = "settings.json";
